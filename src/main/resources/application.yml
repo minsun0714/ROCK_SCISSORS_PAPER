@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: rsp-battle
+
+  jpa:
+    open-in-view: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      show-details: when_authorized
+  metrics:
+    tags:
+      application: rsp-battle
+
+server:
+  shutdown: graceful
