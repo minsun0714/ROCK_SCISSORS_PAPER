@@ -43,7 +43,7 @@ ENV JAVA_TOOL_OPTIONS="\
 -XX:MaxGCPauseMillis=200 \
 -XX:MaxMetaspaceSize=256m \
 -XX:MaxDirectMemorySize=256m \
--Xlog:gc*:file=/app/logs/gc.log:time,uptime,level,tags:filecount=5,filesize=10m \
+-Xlog:gc*:stdout:time,uptime,level,tags \
 -Duser.timezone=Asia/Seoul \
 -Dfile.encoding=UTF-8"
 
