@@ -1,0 +1,49 @@
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${RSP_MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${RSP_MYSQL_DATABASE}
+      MYSQL_USER: ${RSP_MYSQL_USER}
+      MYSQL_PASSWORD: ${RSP_MYSQL_PASSWORD}
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-dev-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    env_file:
+      - .env.docker
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./:/app
+      - gradle-cache:/home/gradle/.gradle
+    command: ./gradlew bootRun --no-daemon
+
+volumes:
+  mysql-dev-data:
+  gradle-cache:
