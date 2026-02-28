@@ -1,0 +1,54 @@
+name: Deploy RSP to EC2
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: ☕ Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: 🧪 Run Tests
+        run: ./gradlew clean test --no-daemon
+
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🚀 Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            set -e
+
+            PROJECT_DIR=/home/ec2-user/ROCK_SCISSORS_PAPER
+            COMPOSE_FILE=docker-compose.yml
+            ENV_FILE=.env.prod
+
+            cd $PROJECT_DIR
+
+            echo "📥 Pull latest code"
+            git pull origin main
+
+            echo "🧹 Stop old containers"
+            docker compose -f $COMPOSE_FILE --env-file $ENV_FILE down || true
+
+            echo "🚀 Build & Start containers"
+            docker compose -f $COMPOSE_FILE --env-file $ENV_FILE up -d --build --remove-orphans
+
+            echo "📊 Running containers"
+            docker ps
