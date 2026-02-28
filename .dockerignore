@@ -1,0 +1,12 @@
+# Certbot SSL files
+certbot
+
+# Logs
+logs
+
+# Git
+.git
+.gitignore
+
+# OS files
+.DS_Store
