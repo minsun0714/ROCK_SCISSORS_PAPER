@@ -1,6 +1,6 @@
-package com.rsp.battle.auth;
+package com.rsp.battle.auth.oauth;
 
-import com.rsp.battle.User.User;
+import com.rsp.battle.user.User;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;

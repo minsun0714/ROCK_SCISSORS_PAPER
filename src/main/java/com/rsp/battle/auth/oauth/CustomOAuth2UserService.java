@@ -1,7 +1,7 @@
-package com.rsp.battle.auth;
+package com.rsp.battle.auth.oauth;
 
-import com.rsp.battle.User.User;
-import com.rsp.battle.User.UserService;
+import com.rsp.battle.user.User;
+import com.rsp.battle.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;

@@ -1,5 +1,9 @@
-package com.rsp.battle.auth;
+package com.rsp.battle.config;
 
+import com.rsp.battle.auth.jwt.JwtAuthenticationFilter;
+import com.rsp.battle.auth.oauth.CustomAuthorizationRequestResolver;
+import com.rsp.battle.auth.oauth.CustomOAuth2UserService;
+import com.rsp.battle.auth.oauth.OAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
