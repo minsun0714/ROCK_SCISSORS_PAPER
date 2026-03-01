@@ -44,6 +44,11 @@ management:
 server:
   shutdown: graceful
 
+app:
+  auth:
+    access-token-expire-millis: 1800000
+    refresh-token-expire-millis: 604800000
+
 jwt:
   secret: ${JWT_SECRET}
 
