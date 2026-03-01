@@ -1,4 +1,4 @@
-package com.rsp.battle.auth.oauth;
+package com.rsp.battle.auth.domain;
 
 import com.rsp.battle.user.User;
 import lombok.Getter;

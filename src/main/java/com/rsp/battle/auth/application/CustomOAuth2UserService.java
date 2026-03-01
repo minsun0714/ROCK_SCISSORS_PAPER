@@ -1,5 +1,6 @@
-package com.rsp.battle.auth.oauth;
+package com.rsp.battle.auth.application;
 
+import com.rsp.battle.auth.domain.CustomOAuth2User;
 import com.rsp.battle.user.User;
 import com.rsp.battle.user.UserService;
 import lombok.RequiredArgsConstructor;
