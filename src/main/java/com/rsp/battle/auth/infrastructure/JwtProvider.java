@@ -1,6 +1,8 @@
-package com.rsp.battle.auth.jwt;
+package com.rsp.battle.auth.infrastructure;
 
+import com.rsp.battle.auth.domain.AccessToken;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -11,7 +13,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
-import io.jsonwebtoken.JwtException;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -39,6 +40,10 @@ public class JwtProvider {
                 .signWith(key, SignatureAlgorithm.HS512)
                 .setExpiration(new Date(now + expiryTime))
                 .compact();
+    }
+
+    public AccessToken issueAccessToken(long userId, long expiryTime) {
+        return new AccessToken(createJwtToken(userId, expiryTime), expiryTime);
     }
 
     public Authentication getAuthentication(String token) {
