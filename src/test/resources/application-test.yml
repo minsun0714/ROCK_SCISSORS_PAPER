@@ -7,7 +7,7 @@ frontend:
   url: http://localhost:3000
 
 jwt:
-  secret: test-jwt-secret
+  secret: dGVzdC1zZWNyZXQta2V5LXRlc3Qtc2VjcmV0LWtleS0xMjM0NTY3OA==
 
 spring:
   datasource:
