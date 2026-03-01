@@ -1,4 +1,4 @@
-package com.rsp.battle.auth;
+package com.rsp.battle.auth.oauth;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

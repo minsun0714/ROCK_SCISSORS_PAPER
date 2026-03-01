@@ -1,4 +1,4 @@
-package com.rsp.battle.auth;
+package com.rsp.battle.auth.oauth;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;

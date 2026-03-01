@@ -1,4 +1,4 @@
-package com.rsp.battle.auth;
+package com.rsp.battle.auth.refresh;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;

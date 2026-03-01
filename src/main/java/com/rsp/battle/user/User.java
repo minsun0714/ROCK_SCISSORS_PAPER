@@ -1,4 +1,4 @@
-package com.rsp.battle.User;
+package com.rsp.battle.user;
 
 import jakarta.persistence.*;
 import lombok.*;

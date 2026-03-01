@@ -1,4 +1,4 @@
-package com.rsp.battle.auth;
+package com.rsp.battle.auth.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
