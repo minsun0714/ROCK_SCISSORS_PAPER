@@ -1,5 +1,8 @@
-package com.rsp.battle.auth.refresh;
+package com.rsp.battle.auth.presentation;
 
+import com.rsp.battle.auth.domain.AccessToken;
+import com.rsp.battle.auth.domain.RefreshToken;
+import com.rsp.battle.auth.application.RefreshTokenService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +18,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
-public class AuthRefreshController {
+public class RefreshController {
 
     @Value("${app.cookie.secure}")
     private boolean cookieSecure;
@@ -23,14 +26,21 @@ public class AuthRefreshController {
     @Value("${app.cookie.same-site}")
     private String cookieSameSite;
 
-    private final AuthRefreshService authRefreshService;
+    private final RefreshTokenService refreshTokenService;
 
     @PostMapping("/refresh")
     public ResponseEntity<Void> refresh(
-            @CookieValue(value = "refresh_token", required = false) String refreshToken,
+            @CookieValue(value = "refresh_token", required = false) String refreshTokenValue,
             HttpServletResponse response
     ) {
-        Optional<String> newAccessToken = authRefreshService.reissueAccessToken(refreshToken);
+        Optional<RefreshToken> refreshToken = RefreshToken.fromNullable(refreshTokenValue);
+        if (refreshToken.isEmpty()) {
+            clearCookie(response, "access_token", "/");
+            clearCookie(response, "refresh_token", "/auth/refresh");
+            return ResponseEntity.status(401).build();
+        }
+
+        Optional<AccessToken> newAccessToken = refreshTokenService.reissueAccessToken(refreshToken.get());
 
         if (newAccessToken.isEmpty()) {
             clearCookie(response, "access_token", "/");
@@ -41,8 +51,8 @@ public class AuthRefreshController {
         addCookie(
                 response,
                 "access_token",
-                newAccessToken.get(),
-                authRefreshService.getAccessTokenExpiresIn(),
+                newAccessToken.get().value(),
+                newAccessToken.get().expiresInMillis(),
                 "/"
         );
 
