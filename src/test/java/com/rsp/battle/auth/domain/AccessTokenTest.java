@@ -1,6 +1,4 @@
-package com.rsp.battle.auth.jwt;
-
-import com.rsp.battle.auth.domain.AccessToken;
+package com.rsp.battle.auth.domain;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
