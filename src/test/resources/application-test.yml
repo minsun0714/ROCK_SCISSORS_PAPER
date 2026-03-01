@@ -1,3 +1,14 @@
+app:
+  cookie:
+    secure: false
+    same-site: Lax
+
+frontend:
+  url: http://localhost:3000
+
+jwt:
+  secret: ${JWT_SECRET}
+
 spring:
   datasource:
     url: jdbc:h2:mem:testdb
