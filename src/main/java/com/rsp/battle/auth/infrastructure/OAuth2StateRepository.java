@@ -1,18 +1,18 @@
-package com.rsp.battle.auth.oauth;
+package com.rsp.battle.auth.infrastructure;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 
-@Service
-public class OAuth2StateRedisService {
+@Component
+public class OAuth2StateRepository {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
-    public OAuth2StateRedisService(
+    public OAuth2StateRepository(
             @Qualifier("oauthRedisTemplate")
             RedisTemplate<String, Object> redisTemplate
     ) {

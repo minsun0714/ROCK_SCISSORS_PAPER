@@ -1,4 +1,4 @@
-package com.rsp.battle.auth.oauth;
+package com.rsp.battle.auth.infrastructure;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,8 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class RedisOAuth2AuthorizationRequestRepository
-        implements AuthorizationRequestRepository<OAuth2AuthorizationRequest> {
+public class OAuth2AuthorizationRequestRepository implements AuthorizationRequestRepository<OAuth2AuthorizationRequest> {
 
     @Value("${app.cookie.secure}")
     private boolean cookieSecure;
@@ -23,17 +22,15 @@ public class RedisOAuth2AuthorizationRequestRepository
 
     private static final String STATE_COOKIE_NAME = "oauth2_state";
 
-    private final OAuth2StateRedisService redisService;
+    private final OAuth2StateRepository oAuth2StateRepository;
 
-    @Override
     public OAuth2AuthorizationRequest loadAuthorizationRequest(HttpServletRequest request) {
         String state = getStateFromCookie(request);
         if (state == null) return null;
 
-        return redisService.load(state);
+        return oAuth2StateRepository.load(state);
     }
 
-    @Override
     public void saveAuthorizationRequest(
             OAuth2AuthorizationRequest authorizationRequest,
             HttpServletRequest request,
@@ -46,12 +43,11 @@ public class RedisOAuth2AuthorizationRequestRepository
         }
 
         String state = authorizationRequest.getState();
-        redisService.save(state, authorizationRequest);
+        oAuth2StateRepository.save(state, authorizationRequest);
 
         addStateCookie(response, state);
     }
 
-    @Override
     public OAuth2AuthorizationRequest removeAuthorizationRequest(
             HttpServletRequest request,
             HttpServletResponse response
@@ -59,8 +55,8 @@ public class RedisOAuth2AuthorizationRequestRepository
         String state = getStateFromCookie(request);
         if (state == null) return null;
 
-        OAuth2AuthorizationRequest requestToReturn = redisService.load(state);
-        redisService.delete(state);
+        OAuth2AuthorizationRequest requestToReturn = oAuth2StateRepository.load(state);
+        oAuth2StateRepository.delete(state);
         removeStateCookie(response);
 
         return requestToReturn;

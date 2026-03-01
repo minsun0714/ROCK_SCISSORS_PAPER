@@ -1,9 +1,10 @@
 package com.rsp.battle.config;
 
-import com.rsp.battle.auth.jwt.JwtAuthenticationFilter;
-import com.rsp.battle.auth.oauth.CustomAuthorizationRequestResolver;
-import com.rsp.battle.auth.oauth.CustomOAuth2UserService;
-import com.rsp.battle.auth.oauth.OAuth2SuccessHandler;
+import com.rsp.battle.auth.application.CustomOAuth2UserService;
+import com.rsp.battle.auth.infrastructure.OAuth2AuthorizationRequestRepository;
+import com.rsp.battle.auth.security.CustomAuthorizationRequestResolver;
+import com.rsp.battle.auth.security.JwtAuthenticationFilter;
+import com.rsp.battle.auth.security.OAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -11,8 +12,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
-import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
@@ -35,7 +34,7 @@ public class SecurityConfig {
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomAuthorizationRequestResolver customAuthorizationRequestResolver;
-    private final AuthorizationRequestRepository<OAuth2AuthorizationRequest> redisOAuth2AuthorizationRequestRepository;
+    private final OAuth2AuthorizationRequestRepository redisOAuth2AuthorizationRequestRepository;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
