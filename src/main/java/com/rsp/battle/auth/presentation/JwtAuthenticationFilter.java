@@ -1,5 +1,6 @@
-package com.rsp.battle.auth.jwt;
+package com.rsp.battle.auth.presentation;
 
+import com.rsp.battle.auth.infrastructure.JwtProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
