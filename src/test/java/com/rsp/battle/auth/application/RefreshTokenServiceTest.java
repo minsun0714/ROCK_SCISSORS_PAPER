@@ -1,10 +1,9 @@
-package com.rsp.battle.auth.refresh;
+package com.rsp.battle.auth.application;
 
-import com.rsp.battle.auth.application.RefreshTokenService;
 import com.rsp.battle.auth.domain.AccessToken;
-import com.rsp.battle.auth.infrastructure.JwtProvider;
-import com.rsp.battle.auth.domain.TokenPolicy;
 import com.rsp.battle.auth.domain.RefreshToken;
+import com.rsp.battle.auth.domain.TokenPolicy;
+import com.rsp.battle.auth.infrastructure.JwtProvider;
 import com.rsp.battle.auth.infrastructure.RefreshTokenRepository;
 import com.rsp.battle.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;

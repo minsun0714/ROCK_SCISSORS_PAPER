@@ -1,6 +1,4 @@
-package com.rsp.battle.auth.refresh;
-
-import com.rsp.battle.auth.domain.RefreshToken;
+package com.rsp.battle.auth.domain;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

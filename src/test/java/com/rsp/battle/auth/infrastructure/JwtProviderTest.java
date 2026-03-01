@@ -1,4 +1,4 @@
-package com.rsp.battle.auth.jwt;
+package com.rsp.battle.auth.infrastructure;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.Authentication;
