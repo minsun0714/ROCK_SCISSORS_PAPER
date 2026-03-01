@@ -1,7 +1,12 @@
-package com.rsp.battle.auth.oauth;
+package com.rsp.battle.auth.security;
 
-import com.rsp.battle.auth.jwt.JwtProvider;
-import com.rsp.battle.auth.refresh.RefreshTokenService;
+import com.rsp.battle.auth.application.RefreshTokenService;
+import com.rsp.battle.auth.domain.AccessToken;
+import com.rsp.battle.auth.domain.CustomOAuth2User;
+import com.rsp.battle.auth.domain.RefreshToken;
+import com.rsp.battle.auth.domain.TokenPolicy;
+import com.rsp.battle.auth.infrastructure.JwtProvider;
+import com.rsp.battle.auth.infrastructure.OAuth2StateRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -32,41 +37,50 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     private final JwtProvider jwtProvider;
     private final RefreshTokenService refreshTokenService;
-    private final OAuth2StateRedisService redisService;
+    private final TokenPolicy tokenPolicy;
+    private final OAuth2StateRepository oAuth2StateRepository;
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        long ACCESS_TOKEN_EXPIRES_IN = 1000L * 60 * 30;
-        long REFRESH_TOKEN_EXPIRES_IN = 1000L * 60 * 60 * 24 * 7;
-
+    public void onAuthenticationSuccess(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            Authentication authentication
+    ) throws IOException, ServletException {
         CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
-
         long userId = oAuth2User.getUser().getId();
 
-        /**
-         * access token은 바디에 저장하여 redirect_uri와 함께 발급
-         */
-
-        String accessToken = jwtProvider.createJwtToken(
+        AccessToken accessToken = jwtProvider.issueAccessToken(
                 userId,
-                ACCESS_TOKEN_EXPIRES_IN
+                tokenPolicy.accessTokenExpiresInMillis()
         );
 
-        addCookie(response, "access_token", accessToken, ACCESS_TOKEN_EXPIRES_IN, "/");
+        addCookie(
+                response,
+                "access_token",
+                accessToken.value(),
+                accessToken.expiresInMillis(),
+                "/"
+        );
 
-        /**
-         * refresh token은 쿠키에 저장하여 발급
-         */
+        RefreshToken refreshToken = new RefreshToken(UUID.randomUUID().toString());
 
-        String refreshToken = UUID.randomUUID().toString();
+        addCookie(
+                response,
+                "refresh_token",
+                refreshToken.value(),
+                tokenPolicy.refreshTokenExpiresInMillis(),
+                "/auth/refresh"
+        );
 
-        addCookie(response, "refresh_token", refreshToken, REFRESH_TOKEN_EXPIRES_IN, "/auth/refresh");
-
-        refreshTokenService.save(refreshToken, userId, REFRESH_TOKEN_EXPIRES_IN);
+        refreshTokenService.save(
+                refreshToken,
+                userId,
+                tokenPolicy.refreshTokenExpiresInMillis()
+        );
 
         String state = request.getParameter("state");
-        String appRedirectUri = redisService.loadRedirectUri(state);
-        redisService.deleteRedirectUri(state);
+        String appRedirectUri = oAuth2StateRepository.loadRedirectUri(state);
+        oAuth2StateRepository.deleteRedirectUri(state);
 
         if (!isAuthorizedRedirectUri(appRedirectUri)) {
             appRedirectUri = "/";
@@ -74,29 +88,26 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         log.info("app_redirect_uri: {}", appRedirectUri);
         String targetUrl = frontendUrl + appRedirectUri;
-
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
 
     private boolean isAuthorizedRedirectUri(String uri) {
-
         if (uri == null) return false;
 
-        // 외부 도메인 차단
         if (uri.startsWith("http://") || uri.startsWith("https://")) {
             return false;
         }
 
-        // 절대경로만 허용
         return uri.startsWith("/");
     }
 
-    private void addCookie(HttpServletResponse response,
-                           String name,
-                           String value,
-                           long expireMillis,
-                           String path) {
-
+    private void addCookie(
+            HttpServletResponse response,
+            String name,
+            String value,
+            long expireMillis,
+            String path
+    ) {
         long maxAge = expireMillis / 1000;
 
         ResponseCookie cookie = ResponseCookie.from(name, value)

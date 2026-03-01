@@ -1,5 +1,6 @@
-package com.rsp.battle.auth.oauth;
+package com.rsp.battle.auth.security;
 
+import com.rsp.battle.auth.infrastructure.OAuth2StateRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
@@ -12,11 +13,11 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class CustomAuthorizationRequestResolver implements OAuth2AuthorizationRequestResolver {
 
-    private final OAuth2StateRedisService oAuth2StateRedisService;
+    private final OAuth2StateRepository oAuth2StateRepository;
     private final OAuth2AuthorizationRequestResolver defaultResolver;
 
-    public CustomAuthorizationRequestResolver(OAuth2StateRedisService oAuth2StateRedisService, ClientRegistrationRepository repo) {
-        this.oAuth2StateRedisService = oAuth2StateRedisService;
+    public CustomAuthorizationRequestResolver(OAuth2StateRepository oAuth2StateRepository, ClientRegistrationRepository repo) {
+        this.oAuth2StateRepository = oAuth2StateRepository;
         this.defaultResolver =
                 new DefaultOAuth2AuthorizationRequestResolver(repo, "/oauth2/authorization");
     }
@@ -43,7 +44,7 @@ public class CustomAuthorizationRequestResolver implements OAuth2AuthorizationRe
                 request.getQueryString(),
                 appRedirectUri);
         String state = req.getState();
-        oAuth2StateRedisService.saveRedirectUri(state, appRedirectUri);
+        oAuth2StateRepository.saveRedirectUri(state, appRedirectUri);
 
         return OAuth2AuthorizationRequest.from(req)
                 .attributes(attrs -> attrs.put("app_redirect_uri", appRedirectUri))
