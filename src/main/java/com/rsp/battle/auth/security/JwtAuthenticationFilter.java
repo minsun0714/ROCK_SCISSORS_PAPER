@@ -1,4 +1,4 @@
-package com.rsp.battle.auth.presentation;
+package com.rsp.battle.auth.security;
 
 import com.rsp.battle.auth.infrastructure.JwtProvider;
 import jakarta.servlet.FilterChain;
