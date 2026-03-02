@@ -5,7 +5,7 @@ import com.rsp.battle.auth.infrastructure.JwtProvider;
 import com.rsp.battle.auth.domain.TokenPolicy;
 import com.rsp.battle.auth.domain.RefreshToken;
 import com.rsp.battle.auth.infrastructure.RefreshTokenRepository;
-import com.rsp.battle.user.UserRepository;
+import com.rsp.battle.user.persistence.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

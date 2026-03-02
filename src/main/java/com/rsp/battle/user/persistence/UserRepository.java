@@ -1,5 +1,6 @@
-package com.rsp.battle.user;
+package com.rsp.battle.user.persistence;
 
+import com.rsp.battle.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
