@@ -61,19 +61,6 @@ class OtherUserInfoQueryServiceTest {
     }
 
     @Test
-    void getOtherUserInfoReturnsNoneWhenLoginUserMissing() {
-        User targetUser = User.builder()
-                .id(2L)
-                .email("target@example.com")
-                .nickname("target")
-                .oauthProvider("GOOGLE")
-                .build();
-
-        when(userRepository.findById(2L)).thenReturn(Optional.of(targetUser));
-        when(profileImageUrlResolver.resolve(null)).thenReturn(null);
-    }
-
-    @Test
     void getOtherUserInfoThrowsWhenTargetUserMissing() {
         when(userRepository.findById(99L)).thenReturn(Optional.empty());
 
