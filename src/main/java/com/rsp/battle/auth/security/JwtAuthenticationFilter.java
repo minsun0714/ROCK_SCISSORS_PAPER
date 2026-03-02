@@ -3,7 +3,6 @@ package com.rsp.battle.auth.security;
 import com.rsp.battle.auth.infrastructure.JwtProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +26,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
-        String token = extractAccessTokenFromCookie(request);
+        String token = extractAccessTokenFromHeader(request);
 
         if (token != null && jwtProvider.validateToken(token)) {
             Authentication authentication =
@@ -40,16 +39,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private String extractAccessTokenFromCookie(HttpServletRequest request) {
+    private String extractAccessTokenFromHeader(HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
 
-        if (request.getCookies() == null) return null;
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) return null;
 
-        for (Cookie cookie : request.getCookies()) {
-            if ("access_token".equals(cookie.getName())) {
-                return cookie.getValue();
-            }
-        }
-
-        return null;
+        return authorizationHeader.substring(7);
     }
 }

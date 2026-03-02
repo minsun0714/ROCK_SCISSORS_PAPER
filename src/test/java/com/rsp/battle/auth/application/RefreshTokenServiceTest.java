@@ -5,7 +5,7 @@ import com.rsp.battle.auth.domain.RefreshToken;
 import com.rsp.battle.auth.domain.TokenPolicy;
 import com.rsp.battle.auth.infrastructure.JwtProvider;
 import com.rsp.battle.auth.infrastructure.RefreshTokenRepository;
-import com.rsp.battle.user.UserRepository;
+import com.rsp.battle.user.persistence.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
