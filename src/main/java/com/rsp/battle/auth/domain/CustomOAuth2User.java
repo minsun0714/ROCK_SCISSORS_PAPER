@@ -1,6 +1,6 @@
 package com.rsp.battle.auth.domain;
 
-import com.rsp.battle.user.User;
+import com.rsp.battle.user.domain.User;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -31,5 +31,10 @@ public class CustomOAuth2User implements OAuth2User {
     @Override
     public String getName() {
         return user.getId().toString();
+    }
+
+
+    public Long getId() {
+        return user.getId();
     }
 }

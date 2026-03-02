@@ -1,4 +1,4 @@
-package com.rsp.battle.user;
+package com.rsp.battle.user.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -77,5 +77,10 @@ public class User {
                 .nickname(nickname)
                 .oauthProvider(provider)
                 .build();
+    }
+
+    // 상태 메시지 변경
+    public void updateStatusMessage(String newStatusMessage) {
+        this.statusMessage = newStatusMessage;
     }
 }
