@@ -1,3 +1,10 @@
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2
+    s3:
+      bucket: rsp-profile-pictures
+
 spring:
   application:
     name: rsp-battle
