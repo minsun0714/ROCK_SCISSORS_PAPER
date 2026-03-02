@@ -29,8 +29,8 @@ public class User {
     @Column(nullable = false, length = 50)
     private String nickname;
 
-    @Column(name = "profile_image_url", length = 255)
-    private String profileImageUrl;
+    @Column(name = "profile_image_key", length = 255)
+    private String profileImageKey;
 
     @Column(name = "status_message", length = 100)
     private String statusMessage;
@@ -82,5 +82,9 @@ public class User {
     // 상태 메시지 변경
     public void updateStatusMessage(String newStatusMessage) {
         this.statusMessage = newStatusMessage;
+    }
+
+    public void updateProfileImageKey(String newProfileImageKey) {
+        this.profileImageKey = newProfileImageKey;
     }
 }

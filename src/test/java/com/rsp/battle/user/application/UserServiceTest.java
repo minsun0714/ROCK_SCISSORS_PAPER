@@ -3,7 +3,11 @@ package com.rsp.battle.user.application;
 import com.rsp.battle.common.exception.BusinessException;
 import com.rsp.battle.common.exception.ErrorCode;
 import com.rsp.battle.user.domain.User;
+import com.rsp.battle.user.persistence.ProfileImageRepository;
 import com.rsp.battle.user.persistence.UserRepository;
+import com.rsp.battle.user.presentation.ProfilePictureUpdateRequest;
+import com.rsp.battle.user.presentation.ProfilePresignedUrlRequest;
+import com.rsp.battle.user.presentation.ProfilePresignedUrlResponse;
 import com.rsp.battle.user.presentation.UserProfileRequest;
 import com.rsp.battle.user.presentation.UserProfileResponse;
 import org.junit.jupiter.api.Test;
@@ -26,6 +30,9 @@ class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private ProfileImageRepository profileImageRepository;
 
     @Mock
     private OAuth2User oAuth2User;
@@ -103,5 +110,76 @@ class UserServiceTest {
 
         assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
         verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void createProfilePicture_returnsPresignedUrl() {
+        ProfilePresignedUrlRequest request = new ProfilePresignedUrlRequest("cat.png", "image/png");
+        ProfilePresignedUrlResponse expected = new ProfilePresignedUrlResponse(
+                "https://s3.example.com/upload",
+                "profile/uuid_cat.png"
+        );
+
+        when(userRepository.existsById(1L)).thenReturn(true);
+        when(profileImageRepository.createUploadUrl("cat.png", "image/png")).thenReturn(expected);
+
+        ProfilePresignedUrlResponse response = userService.createProfilePicture(1L, request);
+
+        assertEquals(expected, response);
+    }
+
+    @Test
+    void createProfilePicture_throwsWhenUserMissing() {
+        ProfilePresignedUrlRequest request = new ProfilePresignedUrlRequest("cat.png", "image/png");
+        when(userRepository.existsById(9L)).thenReturn(false);
+
+        BusinessException exception = assertThrows(
+                BusinessException.class,
+                () -> userService.createProfilePicture(9L, request)
+        );
+
+        assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
+        verify(profileImageRepository, never()).createUploadUrl(any(), any());
+    }
+
+    @Test
+    void createProfilePicture_throwsWhenFileTypeIsInvalid() {
+        ProfilePresignedUrlRequest request = new ProfilePresignedUrlRequest("cat.gif", "image/gif");
+        when(userRepository.existsById(1L)).thenReturn(true);
+
+        BusinessException exception = assertThrows(
+                BusinessException.class,
+                () -> userService.createProfilePicture(1L, request)
+        );
+
+        assertEquals(ErrorCode.INVALID_FILE_TYPE, exception.getErrorCode());
+        verify(profileImageRepository, never()).createUploadUrl(any(), any());
+    }
+
+    @Test
+    void updateProfilePictureKey_updatesUserKey() {
+        User user = User.builder()
+                .id(1L)
+                .email("user@example.com")
+                .nickname("tester")
+                .oauthProvider("GOOGLE")
+                .build();
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+        userService.updateProfilePictureKey(1L, new ProfilePictureUpdateRequest("profile/new.png"));
+
+        assertEquals("profile/new.png", user.getProfileImageKey());
+    }
+
+    @Test
+    void updateProfilePictureKey_throwsWhenUserMissing() {
+        when(userRepository.findById(99L)).thenReturn(Optional.empty());
+
+        BusinessException exception = assertThrows(
+                BusinessException.class,
+                () -> userService.updateProfilePictureKey(99L, new ProfilePictureUpdateRequest("profile/new.png"))
+        );
+
+        assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
     }
 }
