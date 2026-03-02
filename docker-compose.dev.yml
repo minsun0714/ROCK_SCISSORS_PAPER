@@ -42,6 +42,7 @@ services:
     volumes:
       - ./:/app
       - gradle-cache:/home/gradle/.gradle
+      - ${USERPROFILE}/.aws:/root/.aws:ro
     command: ./gradlew bootRun --no-daemon
 
 volumes:
