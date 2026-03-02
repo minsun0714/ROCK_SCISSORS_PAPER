@@ -1,9 +1,9 @@
 package com.rsp.battle.auth.infrastructure;
 
+import com.rsp.battle.auth.domain.CustomUserPrincipal;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 
 import java.util.Arrays;
 import java.util.Base64;
@@ -36,9 +36,9 @@ class JwtProviderTest {
 
         Authentication authentication = provider.getAuthentication(token);
         assertNotNull(authentication);
-        assertInstanceOf(User.class, authentication.getPrincipal());
+        assertInstanceOf(CustomUserPrincipal.class, authentication.getPrincipal());
 
-        User principal = (User) authentication.getPrincipal();
+        CustomUserPrincipal principal = (CustomUserPrincipal) authentication.getPrincipal();
         assertEquals("7", principal.getUsername());
 
         Collection<? extends GrantedAuthority> authorities = principal.getAuthorities();

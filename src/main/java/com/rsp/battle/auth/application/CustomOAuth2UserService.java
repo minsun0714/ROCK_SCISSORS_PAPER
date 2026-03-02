@@ -1,8 +1,8 @@
 package com.rsp.battle.auth.application;
 
 import com.rsp.battle.auth.domain.CustomOAuth2User;
-import com.rsp.battle.user.User;
-import com.rsp.battle.user.UserService;
+import com.rsp.battle.user.domain.User;
+import com.rsp.battle.user.application.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;

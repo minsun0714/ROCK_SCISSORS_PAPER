@@ -35,7 +35,6 @@ public class RefreshController {
     ) {
         Optional<RefreshToken> refreshToken = RefreshToken.fromNullable(refreshTokenValue);
         if (refreshToken.isEmpty()) {
-            clearCookie(response, "access_token", "/");
             clearCookie(response, "refresh_token", "/auth/refresh");
             return ResponseEntity.status(401).build();
         }
@@ -43,40 +42,13 @@ public class RefreshController {
         Optional<AccessToken> newAccessToken = refreshTokenService.reissueAccessToken(refreshToken.get());
 
         if (newAccessToken.isEmpty()) {
-            clearCookie(response, "access_token", "/");
             clearCookie(response, "refresh_token", "/auth/refresh");
             return ResponseEntity.status(401).build();
         }
 
-        addCookie(
-                response,
-                "access_token",
-                newAccessToken.get().value(),
-                newAccessToken.get().expiresInMillis(),
-                "/"
-        );
+        response.setHeader("Authorization", "Bearer " + newAccessToken.get().value());
 
         return ResponseEntity.noContent().build();
-    }
-
-    private void addCookie(
-            HttpServletResponse response,
-            String name,
-            String value,
-            long expireMillis,
-            String path
-    ) {
-        long maxAge = expireMillis / 1000;
-
-        ResponseCookie cookie = ResponseCookie.from(name, value)
-                .httpOnly(true)
-                .secure(cookieSecure)
-                .sameSite(cookieSameSite)
-                .path(path)
-                .maxAge(maxAge)
-                .build();
-
-        response.addHeader("Set-Cookie", cookie.toString());
     }
 
     private void clearCookie(HttpServletResponse response, String name, String path) {
