@@ -8,8 +8,8 @@ import com.rsp.battle.user.persistence.UserRepository;
 import com.rsp.battle.user.presentation.ProfilePictureUpdateRequest;
 import com.rsp.battle.user.presentation.ProfilePresignedUrlRequest;
 import com.rsp.battle.user.presentation.ProfilePresignedUrlResponse;
-import com.rsp.battle.user.presentation.UserProfileRequest;
-import com.rsp.battle.user.presentation.UserProfileResponse;
+import com.rsp.battle.user.presentation.StatusMessageUpdateRequest;
+import com.rsp.battle.user.presentation.StatusMessageUpdateResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -71,7 +71,7 @@ class UserServiceTest {
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
-        UserProfileResponse result = userService.updateStatusMessage(1L, new UserProfileRequest("new status"));
+        StatusMessageUpdateResponse result = userService.updateStatusMessage(1L, new StatusMessageUpdateRequest("new status"));
 
         assertEquals(1L, result.id());
         assertEquals("tester", result.nickname());
@@ -105,7 +105,7 @@ class UserServiceTest {
 
         BusinessException exception = assertThrows(
                 BusinessException.class,
-                () -> userService.updateStatusMessage(99L, new UserProfileRequest("status"))
+                () -> userService.updateStatusMessage(99L, new StatusMessageUpdateRequest("status"))
         );
 
         assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());

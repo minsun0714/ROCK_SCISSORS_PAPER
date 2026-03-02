@@ -37,13 +37,13 @@ public class UserService {
     }
 
     @Transactional
-    public UserProfileResponse updateStatusMessage(long userId, UserProfileRequest userProfileRequest) {
+    public StatusMessageUpdateResponse updateStatusMessage(long userId, StatusMessageUpdateRequest statusMessageUpdateRequest) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        user.updateStatusMessage(userProfileRequest.statusMessage());
+        user.updateStatusMessage(statusMessageUpdateRequest.statusMessage());
 
-        return UserProfileResponse.from(user);
+        return StatusMessageUpdateResponse.from(user);
     }
 
     public ProfilePresignedUrlResponse createProfilePicture(long userId, ProfilePresignedUrlRequest profilePresignedUrlRequest) {
