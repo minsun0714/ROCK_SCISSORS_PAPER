@@ -1,4 +1,4 @@
-package com.rsp.battle.config;
+package com.rsp.battle.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
