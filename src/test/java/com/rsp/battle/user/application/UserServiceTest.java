@@ -5,6 +5,9 @@ import com.rsp.battle.common.exception.ErrorCode;
 import com.rsp.battle.user.domain.User;
 import com.rsp.battle.user.persistence.ProfileImageRepository;
 import com.rsp.battle.user.persistence.UserRepository;
+import com.rsp.battle.user.presentation.MyInfoResponse;
+import com.rsp.battle.user.presentation.ProfileImageUrlResolver;
+import com.rsp.battle.user.presentation.PresenceStatus;
 import com.rsp.battle.user.presentation.ProfilePictureUpdateRequest;
 import com.rsp.battle.user.presentation.ProfilePresignedUrlRequest;
 import com.rsp.battle.user.presentation.ProfilePresignedUrlResponse;
@@ -33,6 +36,9 @@ class UserServiceTest {
 
     @Mock
     private ProfileImageRepository profileImageRepository;
+
+    @Mock
+    private ProfileImageUrlResolver profileImageUrlResolver;
 
     @Mock
     private OAuth2User oAuth2User;
@@ -110,6 +116,42 @@ class UserServiceTest {
 
         assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
         verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void getMyInfo_returnsResolvedProfileImageUrl() {
+        User user = User.builder()
+                .id(1L)
+                .email("user@example.com")
+                .nickname("tester")
+                .profileImageKey("profile/user1.png")
+                .statusMessage("hello")
+                .oauthProvider("GOOGLE")
+                .build();
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(profileImageUrlResolver.resolve("profile/user1.png"))
+                .thenReturn("https://cdn.example.com/profile/user1.png");
+
+        MyInfoResponse response = userService.getMyInfo(1L);
+
+        assertEquals(1L, response.userId());
+        assertEquals("tester", response.nickname());
+        assertEquals("user@example.com", response.email());
+        assertEquals("https://cdn.example.com/profile/user1.png", response.profileImageUrl());
+        assertEquals("hello", response.statusMessage());
+        assertEquals(PresenceStatus.ONLINE, response.presenceStatus());
+    }
+
+    @Test
+    void getMyInfo_throwsWhenUserMissing() {
+        when(userRepository.findById(77L)).thenReturn(Optional.empty());
+
+        BusinessException exception = assertThrows(
+                BusinessException.class,
+                () -> userService.getMyInfo(77L)
+        );
+
+        assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
     }
 
     @Test
