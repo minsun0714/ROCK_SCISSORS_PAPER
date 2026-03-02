@@ -17,6 +17,15 @@ public class MyInfoController {
 
     private final UserService userService;
 
+    @GetMapping
+    public ResponseEntity<MyInfoResponse> getMyInfo(
+            @AuthenticationPrincipal CustomUserPrincipal user
+    ) {
+        MyInfoResponse response = userService.getMyInfo(user.getUserId());
+
+        return ResponseEntity.ok(response);
+    }
+
     @PatchMapping("/status-message")
     public ResponseEntity<StatusMessageUpdateResponse> updateStatusMessage(
             @AuthenticationPrincipal CustomUserPrincipal user,
@@ -25,8 +34,8 @@ public class MyInfoController {
 
         StatusMessageUpdateResponse response = userService.updateStatusMessage(
                         user.getUserId(),
-                statusMessageUpdateRequest
-                );
+                        statusMessageUpdateRequest
+        );
 
         return ResponseEntity.ok(response);
     }
