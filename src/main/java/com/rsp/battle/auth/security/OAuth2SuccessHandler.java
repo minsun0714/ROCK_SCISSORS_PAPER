@@ -1,12 +1,10 @@
 package com.rsp.battle.auth.security;
 
 import com.rsp.battle.auth.application.RefreshTokenService;
-import com.rsp.battle.auth.domain.AccessToken;
 import com.rsp.battle.auth.domain.CustomOAuth2User;
 import com.rsp.battle.auth.domain.RefreshToken;
 import com.rsp.battle.auth.domain.TokenPolicy;
-import com.rsp.battle.auth.infrastructure.JwtProvider;
-import com.rsp.battle.auth.infrastructure.OAuth2StateRepository;
+import com.rsp.battle.auth.infrastructure.AuthorizationCodeRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,8 +15,10 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 @Component
@@ -35,10 +35,9 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     @Value("${frontend.url}")
     private String frontendUrl;
 
-    private final JwtProvider jwtProvider;
     private final RefreshTokenService refreshTokenService;
     private final TokenPolicy tokenPolicy;
-    private final OAuth2StateRepository oAuth2StateRepository;
+    private final AuthorizationCodeRepository authorizationCodeRepository;
 
     @Override
     public void onAuthenticationSuccess(
@@ -48,19 +47,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     ) throws IOException, ServletException {
         CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
         long userId = oAuth2User.getUser().getId();
-
-        AccessToken accessToken = jwtProvider.issueAccessToken(
-                userId,
-                tokenPolicy.accessTokenExpiresInMillis()
-        );
-
-        addCookie(
-                response,
-                "access_token",
-                accessToken.value(),
-                accessToken.expiresInMillis(),
-                "/"
-        );
 
         RefreshToken refreshToken = new RefreshToken(UUID.randomUUID().toString());
 
@@ -78,27 +64,19 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 tokenPolicy.refreshTokenExpiresInMillis()
         );
 
-        String state = request.getParameter("state");
-        String appRedirectUri = oAuth2StateRepository.loadRedirectUri(state);
-        oAuth2StateRepository.deleteRedirectUri(state);
+        String code = UUID.randomUUID().toString();
+        authorizationCodeRepository.save(code, userId);
 
-        if (!isAuthorizedRedirectUri(appRedirectUri)) {
-            appRedirectUri = "/";
-        }
+        String targetUrl = UriComponentsBuilder
+                .fromUriString(frontendUrl)
+                .path("/oauth/callback")
+                .queryParam("code", code)
+                .encode(StandardCharsets.UTF_8)
+                .build()
+                .toUriString();
 
-        log.info("app_redirect_uri: {}", appRedirectUri);
-        String targetUrl = frontendUrl + appRedirectUri;
+        log.info("oauth callback redirect: {}", targetUrl);
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
-    }
-
-    private boolean isAuthorizedRedirectUri(String uri) {
-        if (uri == null) return false;
-
-        if (uri.startsWith("http://") || uri.startsWith("https://")) {
-            return false;
-        }
-
-        return uri.startsWith("/");
     }
 
     private void addCookie(
