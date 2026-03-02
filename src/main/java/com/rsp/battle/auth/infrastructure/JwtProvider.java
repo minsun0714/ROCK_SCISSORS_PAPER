@@ -1,6 +1,7 @@
 package com.rsp.battle.auth.infrastructure;
 
 import com.rsp.battle.auth.domain.AccessToken;
+import com.rsp.battle.auth.domain.CustomUserPrincipal;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -12,7 +13,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -60,7 +60,10 @@ public class JwtProvider {
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
-        User principal = new User(claims.getSubject(), "", authorities);
+        Long userId = Long.valueOf(claims.getSubject());
+
+        CustomUserPrincipal principal =
+                new CustomUserPrincipal(userId, authorities);
 
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
