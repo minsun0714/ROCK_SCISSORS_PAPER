@@ -1,4 +1,4 @@
-package com.rsp.battle.config;
+package com.rsp.battle.common.config;
 
 import com.rsp.battle.auth.application.CustomOAuth2UserService;
 import com.rsp.battle.auth.infrastructure.OAuth2AuthorizationRequestRepository;
