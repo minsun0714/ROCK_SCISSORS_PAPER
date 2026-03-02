@@ -2,14 +2,12 @@ package com.rsp.battle.user.presentation;
 
 import com.rsp.battle.auth.domain.CustomUserPrincipal;
 import com.rsp.battle.user.application.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/users/me")
@@ -22,7 +20,7 @@ public class MyInfoController {
     @PatchMapping("/status-message")
     public ResponseEntity<UserProfileResponse> updateStatusMessage(
             @AuthenticationPrincipal CustomUserPrincipal user,
-            @RequestBody UserProfileRequest userProfileRequest
+            @Valid @RequestBody UserProfileRequest userProfileRequest
     ) {
 
         UserProfileResponse response = userService.updateStatusMessage(
@@ -31,5 +29,35 @@ public class MyInfoController {
                 );
 
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/profile-picture")
+    public ResponseEntity<ProfilePresignedUrlResponse> createProfilePicture(
+            @AuthenticationPrincipal CustomUserPrincipal user,
+            @Valid @RequestBody ProfilePresignedUrlRequest profilePresignedUrlRequest
+    ) {
+        ProfilePresignedUrlResponse response = userService.createProfilePicture(
+                        user.getUserId(),
+                        profilePresignedUrlRequest
+        );
+
+        log.info("presignedUrl 발급: {}", response.uploadUrl());
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/profile-picture")
+    public ResponseEntity<Void> updateProfilePictureKey(
+            @AuthenticationPrincipal CustomUserPrincipal user,
+            @Valid @RequestBody ProfilePictureUpdateRequest profilePictureUpdateRequest
+    ) {
+        userService.updateProfilePictureKey(
+                user.getUserId(),
+                profilePictureUpdateRequest
+        );
+
+        log.info("key:{} DB에 저장 완료", profilePictureUpdateRequest.key());
+
+        return ResponseEntity.noContent().build();
     }
 }
