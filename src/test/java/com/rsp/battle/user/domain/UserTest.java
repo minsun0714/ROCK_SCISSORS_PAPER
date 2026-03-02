@@ -14,7 +14,7 @@ class UserTest {
         assertEquals("user@example.com", user.getEmail());
         assertEquals("tester", user.getNickname());
         assertEquals("google", user.getOauthProvider());
-        assertNull(user.getProfileImageUrl());
+        assertNull(user.getProfileImageKey());
         assertNull(user.getStatusMessage());
     }
 
@@ -25,5 +25,14 @@ class UserTest {
         user.updateStatusMessage("hello");
 
         assertEquals("hello", user.getStatusMessage());
+    }
+
+    @Test
+    void updateProfileImageKey() {
+        User user = User.createFromOAuth("user@example.com", "tester", "google");
+
+        user.updateProfileImageKey("profile/uuid_file.png");
+
+        assertEquals("profile/uuid_file.png", user.getProfileImageKey());
     }
 }
