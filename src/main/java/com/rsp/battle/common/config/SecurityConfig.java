@@ -54,7 +54,8 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login/**", "/auth/refresh", "/auth/exchange", "/csrf").permitAll()
+                        .requestMatchers("/users/me").authenticated()
+                        .requestMatchers("/", "/login/**", "/auth/refresh", "/auth/exchange", "/csrf", "/users/*").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth -> oauth

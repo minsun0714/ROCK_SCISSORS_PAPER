@@ -17,16 +17,25 @@ public class MyInfoController {
 
     private final UserService userService;
 
+    @GetMapping
+    public ResponseEntity<MyInfoResponse> getMyInfo(
+            @AuthenticationPrincipal CustomUserPrincipal user
+    ) {
+        MyInfoResponse response = userService.getMyInfo(user.getUserId());
+
+        return ResponseEntity.ok(response);
+    }
+
     @PatchMapping("/status-message")
-    public ResponseEntity<UserProfileResponse> updateStatusMessage(
+    public ResponseEntity<StatusMessageUpdateResponse> updateStatusMessage(
             @AuthenticationPrincipal CustomUserPrincipal user,
-            @Valid @RequestBody UserProfileRequest userProfileRequest
+            @Valid @RequestBody StatusMessageUpdateRequest statusMessageUpdateRequest
     ) {
 
-        UserProfileResponse response = userService.updateStatusMessage(
+        StatusMessageUpdateResponse response = userService.updateStatusMessage(
                         user.getUserId(),
-                        userProfileRequest
-                );
+                        statusMessageUpdateRequest
+        );
 
         return ResponseEntity.ok(response);
     }
