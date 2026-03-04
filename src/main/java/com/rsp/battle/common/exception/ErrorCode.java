@@ -16,7 +16,14 @@ public enum ErrorCode {
     // ===== User =====
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER_404", "사용자를 찾을 수 없습니다."),
     DUPLICATE_NICKNAME(HttpStatus.CONFLICT, "USER_409", "이미 사용 중인 닉네임입니다."),
-    INVALID_FILE_TYPE(HttpStatus.BAD_REQUEST, "USER_400", "허용되지 않은 파일 타입입니다.");
+    INVALID_FILE_TYPE(HttpStatus.BAD_REQUEST, "USER_400", "허용되지 않은 파일 타입입니다."),
+
+    // ===== FriendRequest =====
+    SELF_FRIEND_REQUEST_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "FRIEND_REQUEST_400", "자기 자신에게 친구 요청을 할 수 없습니다."),
+    FRIEND_REQUEST_NOT_FOUND(HttpStatus.NOT_FOUND, "FRIEND_REQUEST_404", "친구 요청이 존재하지 않습니다."),
+    DUPLICATE_FRIEND_REQUEST(HttpStatus.CONFLICT, "FRIEND_REQUEST_409_1", "이미 전송된 친구 요청입니다."),
+    FRIEND_REQUEST_CLOSED(HttpStatus.CONFLICT, "FRIEND_REQUEST_409_2", "더 이상 존재하지 않는 친구 요청입니다.");
+
 
     private final HttpStatus status;
     private final String code;
