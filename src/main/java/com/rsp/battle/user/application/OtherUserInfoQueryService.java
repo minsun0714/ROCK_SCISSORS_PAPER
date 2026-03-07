@@ -3,6 +3,9 @@ package com.rsp.battle.user.application;
 import com.rsp.battle.auth.domain.CustomUserPrincipal;
 import com.rsp.battle.common.exception.BusinessException;
 import com.rsp.battle.common.exception.ErrorCode;
+import com.rsp.battle.friendRequest.domain.FriendRequest;
+import com.rsp.battle.friendRequest.domain.FriendRequestStatus;
+import com.rsp.battle.friendRequest.persistence.FriendRequestRepository;
 import com.rsp.battle.user.domain.User;
 import com.rsp.battle.user.persistence.PresenceRepository;
 import com.rsp.battle.user.persistence.UserRepository;
@@ -20,6 +23,7 @@ public class OtherUserInfoQueryService {
     private final UserRepository userRepository;
     private final ProfileImageUrlResolver profileImageUrlResolver;
     private final PresenceRepository presenceRepository;
+    private final FriendRequestRepository friendRequestRepository;
 
     public OtherInfoResponse getOtherUserInfo(CustomUserPrincipal loginUser, Long targetUserId) {
         User targetUser = userRepository.findById(targetUserId)
@@ -29,10 +33,26 @@ public class OtherUserInfoQueryService {
 
         PresenceStatus presenceStatus = presenceRepository.getPresenceStatus(targetUserId);
 
-        // 추후 실제값으로 변경 예정 (loginUserId가 null일 때는 NONE으로 처리)
-        FriendStatus friendStatus = FriendStatus.NONE;
-        if (loginUser != null) friendStatus = FriendStatus.FRIEND;
+        if (loginUser == null) {
+            return OtherInfoResponse.from(targetUser, profileImageUrl, presenceStatus, FriendStatus.NONE);
+        }
+
+        FriendStatus friendStatus = resolveFriendStatus(loginUser.getUserId(), targetUserId);
 
         return OtherInfoResponse.from(targetUser, profileImageUrl, presenceStatus, friendStatus);
+    }
+
+    private FriendStatus resolveFriendStatus(Long loginUserId, Long targetUserId) {
+        Long low = Math.min(loginUserId, targetUserId);
+        Long high = Math.max(loginUserId, targetUserId);
+
+        FriendRequest friendRequest = friendRequestRepository.findFirstByUserLowIdAndUserHighIdOrderByCreatedAtDesc(low, high);
+
+        if (friendRequest == null) {
+            return FriendStatus.NONE;
+        }
+
+        FriendRequestStatus friendRequestStatus = friendRequest.getStatus();
+        return FriendStatus.from(friendRequestStatus, loginUserId, friendRequest.getRequester());
     }
 }
