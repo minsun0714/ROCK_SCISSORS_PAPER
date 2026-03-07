@@ -2,11 +2,14 @@ package com.rsp.battle.user.application;
 
 import com.rsp.battle.common.exception.BusinessException;
 import com.rsp.battle.common.exception.ErrorCode;
+import com.rsp.battle.user.domain.PresenceStatus;
 import com.rsp.battle.user.domain.User;
+import com.rsp.battle.user.persistence.PresenceRepository;
 import com.rsp.battle.user.persistence.ProfileImageRepository;
 import com.rsp.battle.user.persistence.UserRepository;
 import com.rsp.battle.user.presentation.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,11 +18,13 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
 
     private final UserRepository userRepository;
     private final ProfileImageRepository profileImageRepository;
     private final ProfileImageUrlResolver profileImageUrlResolver;
+    private final PresenceRepository presenceRepository;
 
     private static final Set<String> ALLOWED_TYPES =
             Set.of("image/jpeg", "image/png", "image/webp");
@@ -42,12 +47,15 @@ public class UserService {
         User me = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        // profileImageUrl은 profileImgKey를 이용하여 생성
         String profileImageUrl = profileImageUrlResolver.resolve(me.getProfileImageKey());
 
-        // presenceStatus는 추후 레디스로 구현 예정
-        PresenceStatus presenceStatus = PresenceStatus.ONLINE;
+        PresenceStatus presenceStatus = presenceRepository.getPresenceStatus(userId);
+
         return MyInfoResponse.from(me, profileImageUrl, presenceStatus);
+    }
+
+    public void heartbeat(Long userId) {
+        presenceRepository.setPresenceStatusOnline(userId);
     }
 
     @Transactional

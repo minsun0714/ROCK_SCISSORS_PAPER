@@ -1,5 +1,6 @@
 package com.rsp.battle.user.presentation;
 
+import com.rsp.battle.user.domain.PresenceStatus;
 import com.rsp.battle.user.domain.User;
 
 public record OtherInfoResponse(
