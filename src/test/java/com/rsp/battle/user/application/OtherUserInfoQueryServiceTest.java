@@ -61,7 +61,7 @@ class OtherUserInfoQueryServiceTest {
 
         assertEquals(2L, response.userId());
         assertEquals("target", response.nickname());
-        assertEquals("https://cdn.example.com/profile/target.png", response.profileImageKey());
+        assertEquals("https://cdn.example.com/profile/target.png", response.profileImageUrl());
         assertEquals(PresenceStatus.ONLINE, response.presenceStatus());
     }
 
