@@ -1,6 +1,6 @@
 package com.rsp.battle.user.persistence;
 
-import com.rsp.battle.user.presentation.PresenceStatus;
+import com.rsp.battle.user.domain.PresenceStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

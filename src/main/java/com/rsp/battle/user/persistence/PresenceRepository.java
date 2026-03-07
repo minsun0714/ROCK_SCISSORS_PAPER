@@ -1,6 +1,6 @@
 package com.rsp.battle.user.persistence;
 
-import com.rsp.battle.user.presentation.PresenceStatus;
+import com.rsp.battle.user.domain.PresenceStatus;
 
 public interface PresenceRepository {
     void setPresenceStatusOnline(Long userId);

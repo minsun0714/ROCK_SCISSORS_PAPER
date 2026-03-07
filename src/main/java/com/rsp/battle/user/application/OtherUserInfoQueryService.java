@@ -8,7 +8,7 @@ import com.rsp.battle.user.persistence.PresenceRepository;
 import com.rsp.battle.user.persistence.UserRepository;
 import com.rsp.battle.user.presentation.FriendStatus;
 import com.rsp.battle.user.presentation.OtherInfoResponse;
-import com.rsp.battle.user.presentation.PresenceStatus;
+import com.rsp.battle.user.domain.PresenceStatus;
 import com.rsp.battle.user.presentation.ProfileImageUrlResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
