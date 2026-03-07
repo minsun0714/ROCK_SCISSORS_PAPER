@@ -22,8 +22,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
+
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -81,7 +81,8 @@ class OtherUserInfoQueryServiceTest {
 
         OtherInfoResponse response = otherUserInfoQueryService.getOtherUserInfo(null, 2L);
 
-        assertEquals(FriendStatus.NONE, response.friendStatus());
+        assertEquals(FriendStatus.NONE, response.friendInfo().status());
+        assertNull(response.friendInfo().friendRequestId());
     }
 
     @Test
@@ -92,7 +93,8 @@ class OtherUserInfoQueryServiceTest {
 
         OtherInfoResponse response = otherUserInfoQueryService.getOtherUserInfo(loginUser, 2L);
 
-        assertEquals(FriendStatus.NONE, response.friendStatus());
+        assertEquals(FriendStatus.NONE, response.friendInfo().status());
+        assertNull(response.friendInfo().friendRequestId());
     }
 
     @Test
@@ -105,7 +107,7 @@ class OtherUserInfoQueryServiceTest {
 
         OtherInfoResponse response = otherUserInfoQueryService.getOtherUserInfo(loginUser, 2L);
 
-        assertEquals(FriendStatus.FRIEND, response.friendStatus());
+        assertEquals(FriendStatus.FRIEND, response.friendInfo().status());
     }
 
     @Test
@@ -117,7 +119,7 @@ class OtherUserInfoQueryServiceTest {
 
         OtherInfoResponse response = otherUserInfoQueryService.getOtherUserInfo(loginUser, 2L);
 
-        assertEquals(FriendStatus.REQUESTED, response.friendStatus());
+        assertEquals(FriendStatus.REQUESTED, response.friendInfo().status());
     }
 
     @Test
@@ -129,7 +131,7 @@ class OtherUserInfoQueryServiceTest {
 
         OtherInfoResponse response = otherUserInfoQueryService.getOtherUserInfo(loginUser, 2L);
 
-        assertEquals(FriendStatus.PENDING, response.friendStatus());
+        assertEquals(FriendStatus.PENDING, response.friendInfo().status());
     }
 
     @Test
@@ -142,7 +144,7 @@ class OtherUserInfoQueryServiceTest {
 
         OtherInfoResponse response = otherUserInfoQueryService.getOtherUserInfo(loginUser, 2L);
 
-        assertEquals(FriendStatus.NONE, response.friendStatus());
+        assertEquals(FriendStatus.NONE, response.friendInfo().status());
     }
 
     @Test

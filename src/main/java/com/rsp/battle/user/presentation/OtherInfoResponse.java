@@ -9,16 +9,16 @@ public record OtherInfoResponse(
         String profileImageUrl,
         String statusMessage,
         PresenceStatus presenceStatus,
-        FriendStatus friendStatus
+        FriendInfo friendInfo
 ) {
-    public static OtherInfoResponse from(User user, String profileImageUrl, PresenceStatus presenceStatus, FriendStatus friendStatus) {
+    public static OtherInfoResponse from(User user, String profileImageUrl, PresenceStatus presenceStatus, FriendInfo friendInfo) {
         return new OtherInfoResponse(
                 user.getId(),
                 user.getNickname(),
                 profileImageUrl,
                 user.getStatusMessage(),
                 presenceStatus,
-                friendStatus
+                friendInfo
         );
     }
 }
