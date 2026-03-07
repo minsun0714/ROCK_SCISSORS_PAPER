@@ -5,6 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -20,4 +23,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
             @Param("email") String email,
             @Param("provider") String provider
     );
+
+    @Query(
+            value = "SELECT * FROM users WHERE MATCH(nickname) AGAINST(:keyword IN BOOLEAN MODE) AND deleted_at IS NULL",
+            countQuery = "SELECT COUNT(*) FROM users WHERE MATCH(nickname) AGAINST(:keyword IN BOOLEAN MODE) AND deleted_at IS NULL",
+            nativeQuery = true
+    )
+    Page<User> searchByNickname(@Param("keyword") String keyword, Pageable pageable);
 }
