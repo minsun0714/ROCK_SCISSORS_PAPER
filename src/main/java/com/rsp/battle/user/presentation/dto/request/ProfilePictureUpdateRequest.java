@@ -1,4 +1,4 @@
-package com.rsp.battle.user.presentation;
+package com.rsp.battle.user.presentation.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 

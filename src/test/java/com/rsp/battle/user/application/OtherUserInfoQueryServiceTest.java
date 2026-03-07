@@ -10,7 +10,7 @@ import com.rsp.battle.user.domain.User;
 import com.rsp.battle.user.persistence.PresenceRepository;
 import com.rsp.battle.user.persistence.UserRepository;
 import com.rsp.battle.user.presentation.FriendStatus;
-import com.rsp.battle.user.presentation.OtherInfoResponse;
+import com.rsp.battle.user.presentation.dto.response.OtherInfoResponse;
 import com.rsp.battle.user.presentation.ProfileImageUrlResolver;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
