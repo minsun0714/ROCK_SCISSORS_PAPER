@@ -1,4 +1,4 @@
-package com.rsp.battle.user.presentation;
+package com.rsp.battle.user.presentation.dto.response;
 
 import com.rsp.battle.user.domain.PresenceStatus;
 
