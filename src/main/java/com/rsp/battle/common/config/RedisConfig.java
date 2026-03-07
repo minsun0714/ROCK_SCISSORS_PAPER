@@ -1,5 +1,6 @@
 package com.rsp.battle.common.config;
 
+import com.rsp.battle.user.presentation.PresenceStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -15,6 +16,20 @@ public class RedisConfig {
             RedisConnectionFactory connectionFactory
     ) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
+        template.setConnectionFactory(connectionFactory);
+
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(new JdkSerializationRedisSerializer());
+
+        template.afterPropertiesSet();
+        return template;
+    }
+
+    @Bean(name = "userPresenceRedisTemplate")
+    public RedisTemplate<String, PresenceStatus> userPresenceRedisTemplate(
+            RedisConnectionFactory connectionFactory
+    ) {
+        RedisTemplate<String, PresenceStatus> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
 
         template.setKeySerializer(new StringRedisSerializer());
