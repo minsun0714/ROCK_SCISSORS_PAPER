@@ -17,6 +17,14 @@ public class MyInfoController {
 
     private final UserService userService;
 
+    @PostMapping("/presence/heartbeat")
+    public ResponseEntity<Void> heartbeat(
+            @AuthenticationPrincipal CustomUserPrincipal user
+    ) {
+        userService.heartbeat(user.getUserId());
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping
     public ResponseEntity<MyInfoResponse> getMyInfo(
             @AuthenticationPrincipal CustomUserPrincipal user

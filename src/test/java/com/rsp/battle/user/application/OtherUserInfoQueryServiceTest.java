@@ -4,10 +4,10 @@ import com.rsp.battle.auth.domain.CustomUserPrincipal;
 import com.rsp.battle.common.exception.BusinessException;
 import com.rsp.battle.common.exception.ErrorCode;
 import com.rsp.battle.user.domain.User;
+import com.rsp.battle.user.persistence.PresenceRepository;
 import com.rsp.battle.user.persistence.UserRepository;
-import com.rsp.battle.user.presentation.FriendStatus;
 import com.rsp.battle.user.presentation.OtherInfoResponse;
-import com.rsp.battle.user.presentation.PresenceStatus;
+import com.rsp.battle.user.domain.PresenceStatus;
 import com.rsp.battle.user.presentation.ProfileImageUrlResolver;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,6 +32,9 @@ class OtherUserInfoQueryServiceTest {
     @Mock
     private ProfileImageUrlResolver profileImageUrlResolver;
 
+    @Mock
+    private PresenceRepository presenceRepository;
+
     @InjectMocks
     private OtherUserInfoQueryService otherUserInfoQueryService;
 
@@ -52,12 +55,14 @@ class OtherUserInfoQueryServiceTest {
         when(userRepository.findById(2L)).thenReturn(Optional.of(targetUser));
         when(profileImageUrlResolver.resolve("profile/target.png"))
                 .thenReturn("https://cdn.example.com/profile/target.png");
+        when(presenceRepository.getPresenceStatus(2L)).thenReturn(PresenceStatus.ONLINE);
 
         OtherInfoResponse response = otherUserInfoQueryService.getOtherUserInfo(loginUser, 2L);
 
         assertEquals(2L, response.userId());
         assertEquals("target", response.nickname());
         assertEquals("https://cdn.example.com/profile/target.png", response.profileImageKey());
+        assertEquals(PresenceStatus.ONLINE, response.presenceStatus());
     }
 
     @Test

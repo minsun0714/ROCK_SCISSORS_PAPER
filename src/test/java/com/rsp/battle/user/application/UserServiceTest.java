@@ -3,11 +3,12 @@ package com.rsp.battle.user.application;
 import com.rsp.battle.common.exception.BusinessException;
 import com.rsp.battle.common.exception.ErrorCode;
 import com.rsp.battle.user.domain.User;
+import com.rsp.battle.user.persistence.PresenceRepository;
 import com.rsp.battle.user.persistence.ProfileImageRepository;
 import com.rsp.battle.user.persistence.UserRepository;
 import com.rsp.battle.user.presentation.MyInfoResponse;
 import com.rsp.battle.user.presentation.ProfileImageUrlResolver;
-import com.rsp.battle.user.presentation.PresenceStatus;
+import com.rsp.battle.user.domain.PresenceStatus;
 import com.rsp.battle.user.presentation.ProfilePictureUpdateRequest;
 import com.rsp.battle.user.presentation.ProfilePresignedUrlRequest;
 import com.rsp.battle.user.presentation.ProfilePresignedUrlResponse;
@@ -39,6 +40,9 @@ class UserServiceTest {
 
     @Mock
     private ProfileImageUrlResolver profileImageUrlResolver;
+
+    @Mock
+    private PresenceRepository presenceRepository;
 
     @Mock
     private OAuth2User oAuth2User;
@@ -131,6 +135,7 @@ class UserServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(profileImageUrlResolver.resolve("profile/user1.png"))
                 .thenReturn("https://cdn.example.com/profile/user1.png");
+        when(presenceRepository.getPresenceStatus(1L)).thenReturn(PresenceStatus.ONLINE);
 
         MyInfoResponse response = userService.getMyInfo(1L);
 
@@ -223,5 +228,12 @@ class UserServiceTest {
         );
 
         assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
+    }
+
+    @Test
+    void heartbeat_callsSetPresenceStatusOnline() {
+        userService.heartbeat(1L);
+
+        verify(presenceRepository).setPresenceStatusOnline(1L);
     }
 }

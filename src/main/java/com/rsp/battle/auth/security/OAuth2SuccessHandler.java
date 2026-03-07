@@ -5,6 +5,7 @@ import com.rsp.battle.auth.domain.CustomOAuth2User;
 import com.rsp.battle.auth.domain.RefreshToken;
 import com.rsp.battle.auth.domain.TokenPolicy;
 import com.rsp.battle.auth.infrastructure.AuthorizationCodeRepository;
+import com.rsp.battle.user.application.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -38,6 +39,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final RefreshTokenService refreshTokenService;
     private final TokenPolicy tokenPolicy;
     private final AuthorizationCodeRepository authorizationCodeRepository;
+    private final UserService userService;
 
     @Override
     public void onAuthenticationSuccess(
@@ -47,6 +49,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     ) throws IOException, ServletException {
         CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
         long userId = oAuth2User.getUser().getId();
+
+        userService.heartbeat(userId);
 
         RefreshToken refreshToken = new RefreshToken(UUID.randomUUID().toString());
 
