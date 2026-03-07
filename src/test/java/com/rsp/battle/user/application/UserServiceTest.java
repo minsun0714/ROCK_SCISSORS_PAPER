@@ -22,6 +22,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -235,5 +237,20 @@ class UserServiceTest {
         userService.heartbeat(1L);
 
         verify(presenceRepository).setPresenceStatusOnline(1L);
+    }
+
+    @Test
+    void getPresenceStatuses_delegatesToRepository() {
+        List<Long> userIds = List.of(1L, 2L, 3L);
+        Map<Long, PresenceStatus> expected = Map.of(
+                1L, PresenceStatus.ONLINE,
+                2L, PresenceStatus.OFFLINE,
+                3L, PresenceStatus.IN_BATTLE
+        );
+        when(presenceRepository.getPresenceStatuses(userIds)).thenReturn(expected);
+
+        Map<Long, PresenceStatus> result = userService.getPresenceStatuses(userIds);
+
+        assertEquals(expected, result);
     }
 }

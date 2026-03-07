@@ -9,6 +9,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -74,5 +77,21 @@ class PresenceRepositoryImplTest {
         PresenceStatus result = presenceRepository.getPresenceStatus(1L);
 
         assertEquals(PresenceStatus.OFFLINE, result);
+    }
+
+    @Test
+    void getPresenceStatuses_returnsBulkStatuses() {
+        List<Long> userIds = List.of(1L, 2L, 3L);
+        List<String> keys = List.of("presence:1", "presence:2", "presence:3");
+        List<PresenceStatus> values = Arrays.asList(PresenceStatus.ONLINE, null, PresenceStatus.IN_BATTLE);
+
+        when(redisTemplate.opsForValue()).thenReturn(valueOperations);
+        when(valueOperations.multiGet(keys)).thenReturn(values);
+
+        Map<Long, PresenceStatus> result = presenceRepository.getPresenceStatuses(userIds);
+
+        assertEquals(PresenceStatus.ONLINE, result.get(1L));
+        assertEquals(PresenceStatus.OFFLINE, result.get(2L));
+        assertEquals(PresenceStatus.IN_BATTLE, result.get(3L));
     }
 }
