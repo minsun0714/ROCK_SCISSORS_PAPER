@@ -2,6 +2,12 @@ package com.rsp.battle.user.presentation;
 
 import com.rsp.battle.auth.domain.CustomUserPrincipal;
 import com.rsp.battle.user.application.UserService;
+import com.rsp.battle.user.presentation.dto.request.ProfilePictureUpdateRequest;
+import com.rsp.battle.user.presentation.dto.request.ProfilePresignedUrlRequest;
+import com.rsp.battle.user.presentation.dto.request.StatusMessageUpdateRequest;
+import com.rsp.battle.user.presentation.dto.response.MyInfoResponse;
+import com.rsp.battle.user.presentation.dto.response.ProfilePresignedUrlResponse;
+import com.rsp.battle.user.presentation.dto.response.StatusMessageUpdateResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
