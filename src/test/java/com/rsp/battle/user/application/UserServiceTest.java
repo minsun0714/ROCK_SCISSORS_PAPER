@@ -8,7 +8,7 @@ import com.rsp.battle.user.persistence.ProfileImageRepository;
 import com.rsp.battle.user.persistence.UserRepository;
 import com.rsp.battle.user.presentation.MyInfoResponse;
 import com.rsp.battle.user.presentation.ProfileImageUrlResolver;
-import com.rsp.battle.user.presentation.PresenceStatus;
+import com.rsp.battle.user.domain.PresenceStatus;
 import com.rsp.battle.user.presentation.ProfilePictureUpdateRequest;
 import com.rsp.battle.user.presentation.ProfilePresignedUrlRequest;
 import com.rsp.battle.user.presentation.ProfilePresignedUrlResponse;

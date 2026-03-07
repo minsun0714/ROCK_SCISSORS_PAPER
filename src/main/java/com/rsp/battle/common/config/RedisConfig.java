@@ -1,6 +1,6 @@
 package com.rsp.battle.common.config;
 
-import com.rsp.battle.user.presentation.PresenceStatus;
+import com.rsp.battle.user.domain.PresenceStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;

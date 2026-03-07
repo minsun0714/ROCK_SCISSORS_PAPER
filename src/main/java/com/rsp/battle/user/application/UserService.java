@@ -2,7 +2,7 @@ package com.rsp.battle.user.application;
 
 import com.rsp.battle.common.exception.BusinessException;
 import com.rsp.battle.common.exception.ErrorCode;
-import com.rsp.battle.user.presentation.PresenceStatus;
+import com.rsp.battle.user.domain.PresenceStatus;
 import com.rsp.battle.user.domain.User;
 import com.rsp.battle.user.persistence.PresenceRepository;
 import com.rsp.battle.user.persistence.ProfileImageRepository;
