@@ -14,6 +14,8 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Service
@@ -56,6 +58,10 @@ public class UserService {
 
     public void heartbeat(Long userId) {
         presenceRepository.setPresenceStatusOnline(userId);
+    }
+
+    public Map<Long, PresenceStatus> getPresenceStatuses(List<Long> userIds) {
+        return presenceRepository.getPresenceStatuses(userIds);
     }
 
     @Transactional
