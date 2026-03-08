@@ -1,6 +1,8 @@
 package com.rsp.battle.friendRequest.application;
 
 import com.rsp.battle.friend.presentation.FriendResponse;
+import com.rsp.battle.friendRequest.domain.FriendRequest;
+import com.rsp.battle.friendRequest.persistence.FriendRequestRepository;
 import com.rsp.battle.user.domain.PresenceStatus;
 import com.rsp.battle.user.domain.User;
 import com.rsp.battle.user.persistence.PresenceRepository;
@@ -35,10 +37,24 @@ class FriendRequestQueryServiceTest {
     private PresenceRepository presenceRepository;
 
     @Mock
+    private FriendRequestRepository friendRequestRepository;
+
+    @Mock
     private ProfileImageUrlResolver profileImageUrlResolver;
 
     @InjectMocks
     private FriendRequestQueryService friendRequestQueryService;
+
+    private static FriendRequest friendRequest(Long id, Long requesterId, Long receiverId) {
+        return FriendRequest.builder()
+                .id(id)
+                .requester(requesterId)
+                .receiver(receiverId)
+                .userLowId(Math.min(requesterId, receiverId))
+                .userHighId(Math.max(requesterId, receiverId))
+                .status(com.rsp.battle.friendRequest.domain.FriendRequestStatus.PENDING)
+                .build();
+    }
 
     private static User user(Long id, String nickname) {
         return User.builder()
@@ -59,6 +75,7 @@ class FriendRequestQueryServiceTest {
         given(userRepository.searchPendingFriendRequestByNickname("", 1L, pageable))
                 .willReturn(emptyPage);
         given(presenceRepository.getPresenceStatuses(List.of())).willReturn(Map.of());
+        given(friendRequestRepository.findAllByUserIdPairIn(1L, List.of())).willReturn(List.of());
 
         Paginated<FriendResponse> result = friendRequestQueryService.getMyPaginatedPendingUserList(1L, "", pageable);
 
@@ -78,11 +95,13 @@ class FriendRequestQueryServiceTest {
         given(presenceRepository.getPresenceStatuses(List.of(2L, 3L)))
                 .willReturn(Map.of(2L, PresenceStatus.ONLINE, 3L, PresenceStatus.OFFLINE));
         given(profileImageUrlResolver.resolve(anyString())).willReturn("https://s3/img");
+        given(friendRequestRepository.findAllByUserIdPairIn(1L, List.of(2L, 3L)))
+                .willReturn(List.of(friendRequest(100L, 2L, 1L), friendRequest(101L, 3L, 1L)));
 
         Paginated<FriendResponse> result = friendRequestQueryService.getMyPaginatedPendingUserList(1L, "", pageable);
 
         assertThat(result.content()).hasSize(2);
-        assertThat(result.content()).allMatch(r -> r.friendStatus() == FriendStatus.PENDING);
+        assertThat(result.content()).allMatch(r -> r.friendInfo().status() == FriendStatus.PENDING);
     }
 
     @Test
@@ -96,6 +115,8 @@ class FriendRequestQueryServiceTest {
         given(presenceRepository.getPresenceStatuses(List.of(2L)))
                 .willReturn(Map.of(2L, PresenceStatus.ONLINE));
         given(profileImageUrlResolver.resolve(anyString())).willReturn("https://s3/img");
+        given(friendRequestRepository.findAllByUserIdPairIn(1L, List.of(2L)))
+                .willReturn(List.of(friendRequest(100L, 2L, 1L)));
 
         Paginated<FriendResponse> result = friendRequestQueryService.getMyPaginatedPendingUserList(1L, "Lazy", pageable);
 
@@ -114,6 +135,8 @@ class FriendRequestQueryServiceTest {
         given(presenceRepository.getPresenceStatuses(List.of(2L)))
                 .willReturn(Map.of(2L, PresenceStatus.IN_BATTLE));
         given(profileImageUrlResolver.resolve(anyString())).willReturn("https://s3/img");
+        given(friendRequestRepository.findAllByUserIdPairIn(1L, List.of(2L)))
+                .willReturn(List.of(friendRequest(100L, 2L, 1L)));
 
         Paginated<FriendResponse> result = friendRequestQueryService.getMyPaginatedPendingUserList(1L, "", pageable);
 
@@ -130,6 +153,7 @@ class FriendRequestQueryServiceTest {
         given(userRepository.searchRequestedFriendRequestByNickname("", 1L, pageable))
                 .willReturn(emptyPage);
         given(presenceRepository.getPresenceStatuses(List.of())).willReturn(Map.of());
+        given(friendRequestRepository.findAllByUserIdPairIn(1L, List.of())).willReturn(List.of());
 
         Paginated<FriendResponse> result = friendRequestQueryService.getMyPaginatedRequestedUserList(1L, "", pageable);
 
@@ -149,11 +173,13 @@ class FriendRequestQueryServiceTest {
         given(presenceRepository.getPresenceStatuses(List.of(2L, 3L)))
                 .willReturn(Map.of(2L, PresenceStatus.OFFLINE, 3L, PresenceStatus.ONLINE));
         given(profileImageUrlResolver.resolve(anyString())).willReturn("https://s3/img");
+        given(friendRequestRepository.findAllByUserIdPairIn(1L, List.of(2L, 3L)))
+                .willReturn(List.of(friendRequest(200L, 1L, 2L), friendRequest(201L, 1L, 3L)));
 
         Paginated<FriendResponse> result = friendRequestQueryService.getMyPaginatedRequestedUserList(1L, "", pageable);
 
         assertThat(result.content()).hasSize(2);
-        assertThat(result.content()).allMatch(r -> r.friendStatus() == FriendStatus.REQUESTED);
+        assertThat(result.content()).allMatch(r -> r.friendInfo().status() == FriendStatus.REQUESTED);
     }
 
     @Test
@@ -167,6 +193,8 @@ class FriendRequestQueryServiceTest {
         given(presenceRepository.getPresenceStatuses(List.of(2L)))
                 .willReturn(Map.of(2L, PresenceStatus.ONLINE));
         given(profileImageUrlResolver.resolve(anyString())).willReturn("https://s3/img");
+        given(friendRequestRepository.findAllByUserIdPairIn(1L, List.of(2L)))
+                .willReturn(List.of(friendRequest(200L, 1L, 2L)));
 
         Paginated<FriendResponse> result = friendRequestQueryService.getMyPaginatedRequestedUserList(1L, "Cool", pageable);
 

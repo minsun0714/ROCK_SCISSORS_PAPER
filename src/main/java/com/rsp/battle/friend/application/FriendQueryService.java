@@ -2,7 +2,7 @@ package com.rsp.battle.friend.application;
 
 import com.rsp.battle.auth.domain.CustomUserPrincipal;
 import com.rsp.battle.friend.presentation.FriendResponse;
-import com.rsp.battle.friendRequest.domain.FriendRequestStatus;
+import com.rsp.battle.friendRequest.domain.FriendRequest;
 import com.rsp.battle.friendRequest.persistence.FriendRequestRepository;
 import com.rsp.battle.user.domain.PresenceStatus;
 import com.rsp.battle.user.domain.User;
@@ -10,6 +10,7 @@ import com.rsp.battle.user.persistence.PresenceRepository;
 import com.rsp.battle.user.persistence.UserRepository;
 import com.rsp.battle.user.presentation.FriendStatus;
 import com.rsp.battle.user.presentation.ProfileImageUrlResolver;
+import com.rsp.battle.user.presentation.dto.response.FriendInfo;
 import com.rsp.battle.user.presentation.dto.response.Paginated;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +50,6 @@ public class FriendQueryService {
         Page<FriendResponse> friendResponses = page.map(friend -> {
             String profileImageUrl = profileImageUrlResolver.resolve(friend.getProfileImageKey());
             PresenceStatus presenceStatus = presenceStatusMap.get(friend.getId());
-            FriendStatus friendStatus = FriendStatus.FRIEND;
 
             return new FriendResponse(
                     friend.getId(),
@@ -57,7 +57,7 @@ public class FriendQueryService {
                     profileImageUrl,
                     friend.getStatusMessage(),
                     presenceStatus,
-                    friendStatus
+                    FriendInfo.of(FriendStatus.FRIEND, null)
             );
         });
 
@@ -75,28 +75,31 @@ public class FriendQueryService {
 
         Map<Long, PresenceStatus> presenceStatusMap = presenceRepository.getPresenceStatuses(idList);
 
-        Map<Long, FriendStatus> friendStatusMap;
+        Map<Long, FriendInfo> friendInfoMap;
 
         if (loginUser != null) {
-            friendStatusMap = friendRequestRepository
+            friendInfoMap = friendRequestRepository
                     .findAllByUserIdPairIn(loginUser.getUserId(), idList)
                     .stream()
                     .collect(Collectors.toMap(
                             fr -> Objects.equals(fr.getRequester(), loginUser.getUserId())
                                     ? fr.getReceiver()
                                     : fr.getRequester(),
-                            fr -> FriendStatus.from(fr.getStatus(), loginUser.getUserId(), fr.getRequester())
+                            fr -> FriendInfo.of(
+                                    FriendStatus.from(fr.getStatus(), loginUser.getUserId(), fr.getRequester()),
+                                    fr.getId()
+                            )
                     ));
         } else {
-            friendStatusMap = new HashMap<>();
+            friendInfoMap = new HashMap<>();
         }
 
         Page<FriendResponse> friendResponses = page.map(friend -> {
             String profileImageUrl = profileImageUrlResolver.resolve(friend.getProfileImageKey());
             PresenceStatus presenceStatus = presenceStatusMap.get(friend.getId());
-            FriendStatus friendStatus = loginUser == null
-                    ? FriendStatus.NONE
-                    : friendStatusMap.getOrDefault(friend.getId(), FriendStatus.NONE);
+            FriendInfo friendInfo = loginUser == null
+                    ? FriendInfo.none()
+                    : friendInfoMap.getOrDefault(friend.getId(), FriendInfo.none());
 
             return new FriendResponse(
                     friend.getId(),
@@ -104,7 +107,7 @@ public class FriendQueryService {
                     profileImageUrl,
                     friend.getStatusMessage(),
                     presenceStatus,
-                    friendStatus
+                    friendInfo
             );
         });
 

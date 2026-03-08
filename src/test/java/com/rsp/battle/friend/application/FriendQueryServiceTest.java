@@ -93,7 +93,7 @@ class FriendQueryServiceTest {
         Paginated<FriendResponse> result = friendQueryService.getMyPaginatedFriends(1L, "", pageable);
 
         assertThat(result.content()).hasSize(2);
-        assertThat(result.content()).allMatch(r -> r.friendStatus() == FriendStatus.FRIEND);
+        assertThat(result.content()).allMatch(r -> r.friendInfo().status() == FriendStatus.FRIEND);
     }
 
     @Test
@@ -157,7 +157,7 @@ class FriendQueryServiceTest {
         Paginated<FriendResponse> result = friendQueryService.getOtherUserPaginatedFriends(
                 loginUser(loginUserId), targetUserId, "", pageable);
 
-        assertThat(result.content().get(0).friendStatus()).isEqualTo(FriendStatus.FRIEND);
+        assertThat(result.content().get(0).friendInfo().status()).isEqualTo(FriendStatus.FRIEND);
     }
 
     @Test
@@ -179,7 +179,7 @@ class FriendQueryServiceTest {
         Paginated<FriendResponse> result = friendQueryService.getOtherUserPaginatedFriends(
                 loginUser(loginUserId), targetUserId, "", pageable);
 
-        assertThat(result.content().get(0).friendStatus()).isEqualTo(FriendStatus.NONE);
+        assertThat(result.content().get(0).friendInfo().status()).isEqualTo(FriendStatus.NONE);
     }
 
     @Test
@@ -198,6 +198,6 @@ class FriendQueryServiceTest {
         Paginated<FriendResponse> result = friendQueryService.getOtherUserPaginatedFriends(
                 null, targetUserId, "", pageable);
 
-        assertThat(result.content().get(0).friendStatus()).isEqualTo(FriendStatus.NONE);
+        assertThat(result.content().get(0).friendInfo().status()).isEqualTo(FriendStatus.NONE);
     }
 }
