@@ -1,11 +1,15 @@
 package com.rsp.battle.friendRequest.presentation;
 
 import com.rsp.battle.auth.domain.CustomUserPrincipal;
+import com.rsp.battle.friend.presentation.FriendResponse;
+import com.rsp.battle.friendRequest.application.FriendRequestQueryService;
 import com.rsp.battle.friendRequest.application.FriendRequestService;
 import com.rsp.battle.friendRequest.presentation.dto.request.FriendRequest;
 import com.rsp.battle.friendRequest.presentation.dto.response.FriendRequestResponse;
+import com.rsp.battle.user.presentation.dto.response.Paginated;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +20,37 @@ import org.springframework.web.bind.annotation.*;
 public class FriendRequestController {
 
     private final FriendRequestService friendRequestService;
+    private final FriendRequestQueryService friendRequestQueryService;
+
+    @GetMapping("/pending")
+    public ResponseEntity<Paginated<FriendResponse>> getMyPaginatedPendingUserList(
+            @AuthenticationPrincipal CustomUserPrincipal principal,
+            @RequestParam(required = false, defaultValue = "") String keyword,
+            Pageable pageable
+    ) {
+        Paginated<FriendResponse> response = friendRequestQueryService.getMyPaginatedPendingUserList(
+                principal.getUserId(),
+                keyword,
+                pageable
+        );
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/requested")
+    public ResponseEntity<Paginated<FriendResponse>> getMyPaginatedRequestedUserList(
+            @AuthenticationPrincipal CustomUserPrincipal principal,
+            @RequestParam(required = false, defaultValue = "") String keyword,
+            Pageable pageable
+    ) {
+        Paginated<FriendResponse> response = friendRequestQueryService.getMyPaginatedRequestedUserList(
+                principal.getUserId(),
+                keyword,
+                pageable
+        );
+
+        return ResponseEntity.ok(response);
+    }
 
     @PostMapping
     public ResponseEntity<FriendRequestResponse> createFriendRequest(

@@ -1,9 +1,7 @@
-package com.rsp.battle.friend.application;
+package com.rsp.battle.friendRequest.application;
 
-import com.rsp.battle.auth.domain.CustomUserPrincipal;
 import com.rsp.battle.friend.presentation.FriendResponse;
 import com.rsp.battle.friendRequest.domain.FriendRequestStatus;
-import com.rsp.battle.friendRequest.persistence.FriendRequestRepository;
 import com.rsp.battle.user.domain.PresenceStatus;
 import com.rsp.battle.user.domain.User;
 import com.rsp.battle.user.persistence.PresenceRepository;
@@ -18,25 +16,21 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 @Transactional(readOnly = true)
-public class FriendQueryService {
+public class FriendRequestQueryService {
 
     private final UserRepository userRepository;
     private final PresenceRepository presenceRepository;
-    private final FriendRequestRepository friendRequestRepository;
     private final ProfileImageUrlResolver profileImageUrlResolver;
 
-    public Paginated<FriendResponse> getMyPaginatedFriends(Long loginUserId, String keyword, Pageable pageable) {
-        Page<User> page = userRepository.searchAcceptedFriendRequestByNickname(
+    public Paginated<FriendResponse> getMyPaginatedPendingUserList(Long loginUserId, String keyword, Pageable pageable) {
+        Page<User> page = userRepository.searchPendingFriendRequestByNickname(
                 keyword,
                 loginUserId,
                 pageable
@@ -49,7 +43,7 @@ public class FriendQueryService {
         Page<FriendResponse> friendResponses = page.map(friend -> {
             String profileImageUrl = profileImageUrlResolver.resolve(friend.getProfileImageKey());
             PresenceStatus presenceStatus = presenceStatusMap.get(friend.getId());
-            FriendStatus friendStatus = FriendStatus.FRIEND;
+            FriendStatus friendStatus = FriendStatus.PENDING;
 
             return new FriendResponse(
                     friend.getId(),
@@ -64,10 +58,10 @@ public class FriendQueryService {
         return Paginated.from(friendResponses);
     }
 
-    public Paginated<FriendResponse> getOtherUserPaginatedFriends(CustomUserPrincipal loginUser, Long targetUserId, String keyword, Pageable pageable) {
-        Page<User> page = userRepository.searchAcceptedFriendRequestByNickname(
+    public Paginated<FriendResponse> getMyPaginatedRequestedUserList(Long loginUserId, String keyword, Pageable pageable) {
+        Page<User> page = userRepository.searchRequestedFriendRequestByNickname(
                 keyword,
-                targetUserId,
+                loginUserId,
                 pageable
         );
 
@@ -75,28 +69,10 @@ public class FriendQueryService {
 
         Map<Long, PresenceStatus> presenceStatusMap = presenceRepository.getPresenceStatuses(idList);
 
-        Map<Long, FriendStatus> friendStatusMap;
-
-        if (loginUser != null) {
-            friendStatusMap = friendRequestRepository
-                    .findAllByUserIdPairIn(loginUser.getUserId(), idList)
-                    .stream()
-                    .collect(Collectors.toMap(
-                            fr -> Objects.equals(fr.getRequester(), loginUser.getUserId())
-                                    ? fr.getReceiver()
-                                    : fr.getRequester(),
-                            fr -> FriendStatus.from(fr.getStatus(), loginUser.getUserId(), fr.getRequester())
-                    ));
-        } else {
-            friendStatusMap = new HashMap<>();
-        }
-
         Page<FriendResponse> friendResponses = page.map(friend -> {
             String profileImageUrl = profileImageUrlResolver.resolve(friend.getProfileImageKey());
             PresenceStatus presenceStatus = presenceStatusMap.get(friend.getId());
-            FriendStatus friendStatus = loginUser == null
-                    ? FriendStatus.NONE
-                    : friendStatusMap.getOrDefault(friend.getId(), FriendStatus.NONE);
+            FriendStatus friendStatus = FriendStatus.REQUESTED;
 
             return new FriendResponse(
                     friend.getId(),
