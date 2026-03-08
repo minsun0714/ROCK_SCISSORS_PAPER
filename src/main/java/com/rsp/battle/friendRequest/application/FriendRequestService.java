@@ -4,13 +4,16 @@ import com.rsp.battle.common.exception.BusinessException;
 import com.rsp.battle.common.exception.ErrorCode;
 import com.rsp.battle.friendRequest.domain.FriendRequest;
 import com.rsp.battle.friendRequest.domain.FriendRequestStatus;
+import com.rsp.battle.friendRequest.domain.event.FriendRequestEvent;
 import com.rsp.battle.friendRequest.persistence.FriendRequestRepository;
 import com.rsp.battle.friendRequest.presentation.FriendRequestAcceptResponse;
 import com.rsp.battle.friendRequest.presentation.FriendRequestRejectResponse;
 import com.rsp.battle.friendRequest.presentation.dto.response.FriendRequestResponse;
+import com.rsp.battle.notification.presentation.NotificationType;
 import com.rsp.battle.user.persistence.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +27,7 @@ public class FriendRequestService {
 
     private final UserRepository userRepository;
     private final FriendRequestRepository friendRequestRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public FriendRequestResponse createFriendRequest(Long userId, Long targetUserId) {
@@ -42,6 +46,12 @@ public class FriendRequestService {
             throw new BusinessException(ErrorCode.DUPLICATE_FRIEND_REQUEST);
         }
 
+        eventPublisher.publishEvent(
+                new FriendRequestEvent(
+                        targetUserId, NotificationType.FRIEND_REQUESTED, userId
+                )
+        );
+
         return FriendRequestResponse.from(friendRequest);
     }
 
@@ -59,6 +69,12 @@ public class FriendRequestService {
         }
 
         friendRequestRepository.delete(friendRequest);
+
+        eventPublisher.publishEvent(
+                new FriendRequestEvent(
+                        friendRequest.getReceiver(), NotificationType.FRIEND_REQUEST_CANCELLED, userId
+                )
+        );
     }
 
     @Transactional
@@ -70,6 +86,12 @@ public class FriendRequestService {
             throw new BusinessException(ErrorCode.FORBIDDEN);
         }
         friendRequest.accept();
+
+        eventPublisher.publishEvent(
+                new FriendRequestEvent(
+                        friendRequest.getRequester(), NotificationType.FRIEND_REQUEST_ACCEPTED, userId
+                )
+        );
 
         return FriendRequestAcceptResponse.from(friendRequest);
     }
@@ -84,6 +106,12 @@ public class FriendRequestService {
         }
 
         friendRequest.reject();
+
+        eventPublisher.publishEvent(
+                new FriendRequestEvent(
+                        friendRequest.getRequester(), NotificationType.FRIEND_REQUEST_REJECTED, userId
+                )
+        );
 
         return FriendRequestRejectResponse.from(friendRequest);
     }

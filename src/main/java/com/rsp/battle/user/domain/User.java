@@ -62,7 +62,8 @@ public class User {
      * generated column (STORED)
      * insert/update 불가
      */
-    @Column(name = "active_flag", insertable = false, updatable = false)
+    @Column(name = "active_flag", insertable = false, updatable = false,
+            columnDefinition = "TINYINT GENERATED ALWAYS AS (CASE WHEN deleted_at IS NULL THEN 1 ELSE NULL END) STORED")
     private Integer activeFlag;
 
     /* =========================

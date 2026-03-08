@@ -67,7 +67,7 @@ class FriendQueryServiceTest {
         Pageable pageable = PageRequest.of(0, 10);
         Page<User> emptyPage = new PageImpl<>(List.of(), pageable, 0);
 
-        given(userRepository.searchByNicknameAndFriendRequestStatus("", 1L, "ACCEPTED", pageable))
+        given(userRepository.searchAcceptedFriendRequestByNickname("", 1L, pageable))
                 .willReturn(emptyPage);
         given(presenceRepository.getPresenceStatuses(List.of())).willReturn(Map.of());
 
@@ -84,7 +84,7 @@ class FriendQueryServiceTest {
         User friend2 = user(3L, "친구2");
         Page<User> page = new PageImpl<>(List.of(friend1, friend2), pageable, 2);
 
-        given(userRepository.searchByNicknameAndFriendRequestStatus("", 1L, "ACCEPTED", pageable))
+        given(userRepository.searchAcceptedFriendRequestByNickname("", 1L, pageable))
                 .willReturn(page);
         given(presenceRepository.getPresenceStatuses(List.of(2L, 3L)))
                 .willReturn(Map.of(2L, PresenceStatus.ONLINE, 3L, PresenceStatus.OFFLINE));
@@ -93,7 +93,7 @@ class FriendQueryServiceTest {
         Paginated<FriendResponse> result = friendQueryService.getMyPaginatedFriends(1L, "", pageable);
 
         assertThat(result.content()).hasSize(2);
-        assertThat(result.content()).allMatch(r -> r.friendStatus() == FriendStatus.FRIEND);
+        assertThat(result.content()).allMatch(r -> r.friendInfo().status() == FriendStatus.FRIEND);
     }
 
     @Test
@@ -103,7 +103,7 @@ class FriendQueryServiceTest {
         User friend2 = user(3L, "친구2");
         Page<User> page = new PageImpl<>(List.of(friend1, friend2), pageable, 2);
 
-        given(userRepository.searchByNicknameAndFriendRequestStatus("", 1L, "ACCEPTED", pageable))
+        given(userRepository.searchAcceptedFriendRequestByNickname("", 1L, pageable))
                 .willReturn(page);
         given(presenceRepository.getPresenceStatuses(List.of(2L, 3L)))
                 .willReturn(Map.of(2L, PresenceStatus.ONLINE, 3L, PresenceStatus.IN_BATTLE));
@@ -121,7 +121,7 @@ class FriendQueryServiceTest {
         User friend = user(2L, "LazyPanda");
         Page<User> page = new PageImpl<>(List.of(friend), pageable, 1);
 
-        given(userRepository.searchByNicknameAndFriendRequestStatus("Lazy", 1L, "ACCEPTED", pageable))
+        given(userRepository.searchAcceptedFriendRequestByNickname("Lazy", 1L, pageable))
                 .willReturn(page);
         given(presenceRepository.getPresenceStatuses(List.of(2L)))
                 .willReturn(Map.of(2L, PresenceStatus.ONLINE));
@@ -146,7 +146,7 @@ class FriendQueryServiceTest {
         FriendRequest friendRequest = FriendRequest.create(loginUserId, 2L);
         friendRequest.accept();
 
-        given(userRepository.searchByNicknameAndFriendRequestStatus("", targetUserId, "ACCEPTED", pageable))
+        given(userRepository.searchAcceptedFriendRequestByNickname("", targetUserId, pageable))
                 .willReturn(page);
         given(presenceRepository.getPresenceStatuses(List.of(2L)))
                 .willReturn(Map.of(2L, PresenceStatus.ONLINE));
@@ -157,7 +157,7 @@ class FriendQueryServiceTest {
         Paginated<FriendResponse> result = friendQueryService.getOtherUserPaginatedFriends(
                 loginUser(loginUserId), targetUserId, "", pageable);
 
-        assertThat(result.content().get(0).friendStatus()).isEqualTo(FriendStatus.FRIEND);
+        assertThat(result.content().get(0).friendInfo().status()).isEqualTo(FriendStatus.FRIEND);
     }
 
     @Test
@@ -168,7 +168,7 @@ class FriendQueryServiceTest {
         User otherFriend = user(2L, "모르는사람");
         Page<User> page = new PageImpl<>(List.of(otherFriend), pageable, 1);
 
-        given(userRepository.searchByNicknameAndFriendRequestStatus("", targetUserId, "ACCEPTED", pageable))
+        given(userRepository.searchAcceptedFriendRequestByNickname("", targetUserId, pageable))
                 .willReturn(page);
         given(presenceRepository.getPresenceStatuses(List.of(2L)))
                 .willReturn(Map.of(2L, PresenceStatus.OFFLINE));
@@ -179,7 +179,7 @@ class FriendQueryServiceTest {
         Paginated<FriendResponse> result = friendQueryService.getOtherUserPaginatedFriends(
                 loginUser(loginUserId), targetUserId, "", pageable);
 
-        assertThat(result.content().get(0).friendStatus()).isEqualTo(FriendStatus.NONE);
+        assertThat(result.content().get(0).friendInfo().status()).isEqualTo(FriendStatus.NONE);
     }
 
     @Test
@@ -189,7 +189,7 @@ class FriendQueryServiceTest {
         User otherFriend = user(2L, "누군가");
         Page<User> page = new PageImpl<>(List.of(otherFriend), pageable, 1);
 
-        given(userRepository.searchByNicknameAndFriendRequestStatus("", targetUserId, "ACCEPTED", pageable))
+        given(userRepository.searchAcceptedFriendRequestByNickname("", targetUserId, pageable))
                 .willReturn(page);
         given(presenceRepository.getPresenceStatuses(List.of(2L)))
                 .willReturn(Map.of(2L, PresenceStatus.ONLINE));
@@ -198,6 +198,6 @@ class FriendQueryServiceTest {
         Paginated<FriendResponse> result = friendQueryService.getOtherUserPaginatedFriends(
                 null, targetUserId, "", pageable);
 
-        assertThat(result.content().get(0).friendStatus()).isEqualTo(FriendStatus.NONE);
+        assertThat(result.content().get(0).friendInfo().status()).isEqualTo(FriendStatus.NONE);
     }
 }

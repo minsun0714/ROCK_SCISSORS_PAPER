@@ -1,0 +1,13 @@
+package com.rsp.battle.notification.presentation;
+
+public enum NotificationType {
+    FRIEND_REQUESTED,
+    FRIEND_REQUEST_CANCELLED,
+    FRIEND_REQUEST_ACCEPTED,
+    FRIEND_REQUEST_REJECTED,
+
+    BATTLE_REQUESTED,
+    BATTLE_REQUEST_CANCELLED,
+    BATTLE_REQUEST_ACCEPTED,
+    BATTLE_REQUEST_REJECTED
+}

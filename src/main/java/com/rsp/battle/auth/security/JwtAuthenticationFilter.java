@@ -28,6 +28,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String token = extractAccessTokenFromHeader(request);
 
+        if (token == null && "/subscribe".equals(request.getServletPath())) {
+            token = request.getParameter("token");
+        }
+
         if (token != null && jwtProvider.validateToken(token)) {
             Authentication authentication =
                     jwtProvider.getAuthentication(token);
@@ -46,4 +50,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         return authorizationHeader.substring(7);
     }
+
 }
