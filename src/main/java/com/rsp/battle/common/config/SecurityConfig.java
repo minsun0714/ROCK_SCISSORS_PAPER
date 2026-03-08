@@ -58,6 +58,9 @@ public class SecurityConfig {
                         .requestMatchers("/", "/login/**", "/auth/refresh", "/auth/exchange", "/csrf", "/users/*", "/friends/*").permitAll()
                         .anyRequest().authenticated()
                 )
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((req, res, authEx) -> res.sendError(401))
+                )
                 .oauth2Login(oauth -> oauth
                         .authorizationEndpoint(endpoint -> endpoint
                                 .authorizationRequestResolver(
