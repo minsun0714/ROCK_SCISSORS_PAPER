@@ -5,6 +5,7 @@ import com.rsp.battle.auth.infrastructure.OAuth2AuthorizationRequestRepository;
 import com.rsp.battle.auth.security.CustomAuthorizationRequestResolver;
 import com.rsp.battle.auth.security.JwtAuthenticationFilter;
 import com.rsp.battle.auth.security.OAuth2SuccessHandler;
+import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -54,6 +55,7 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
+                        .dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()
                         .requestMatchers("/users/me", "/friends/me").authenticated()
                         .requestMatchers("/", "/login/**", "/auth/refresh", "/auth/exchange", "/csrf", "/users/*", "/friends/*").permitAll()
                         .anyRequest().authenticated()
