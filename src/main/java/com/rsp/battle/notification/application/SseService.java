@@ -25,13 +25,24 @@ public class SseService {
 
         sseEmitter.onCompletion(() -> emitterRepository.delete(receiverId, sseEmitter));
         sseEmitter.onTimeout(sseEmitter::complete);
-        sseEmitter.onError(sseEmitter::completeWithError);
+        sseEmitter.onError(e -> {
+            log.warn("SSE error for user {}: {}", receiverId, e.getMessage());
+            emitterRepository.delete(receiverId, sseEmitter);
+        });
+
+        try {
+            // 구독 시 더미 이벤트 발생시켜 비정상적인 emitter의 경우 삭제시킴
+            sseEmitter.send(SseEmitter.event().name("connect").data("connected"));
+        } catch (IOException e) {
+            emitterRepository.delete(receiverId, sseEmitter);
+        }
 
         return sseEmitter;
     }
 
     public void sendToClient(Long receiverId, String eventName, Object data) {
         List<SseEmitter> sseEmitterList = emitterRepository.get(receiverId);
+        log.info("SSE send to user {}: event={}, emitter count={}", receiverId, eventName, sseEmitterList.size());
 
         for (SseEmitter sseEmitter: sseEmitterList) {
             try {
@@ -43,6 +54,7 @@ public class SseService {
                                 .data(data)
                 );
             } catch (IOException e) {
+                log.warn("SSE send failed for user {}, removing emitter: {}", receiverId, e.getMessage());
                 emitterRepository.delete(receiverId, sseEmitter);
             }
         }

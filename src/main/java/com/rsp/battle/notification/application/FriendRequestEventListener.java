@@ -24,15 +24,19 @@ public class FriendRequestEventListener {
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void sendNotification(FriendRequestEvent event) {
-        User sender = userRepository.findById(event.senderId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        try {
+            User sender = userRepository.findById(event.senderId())
+                    .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        FriendRequestNotificationData data = new FriendRequestNotificationData(
-                sender.getId(),
-                sender.getNickname(),
-                profileImageUrlResolver.resolve(sender.getProfileImageKey())
-        );
+            FriendRequestNotificationData data = new FriendRequestNotificationData(
+                    sender.getId(),
+                    sender.getNickname(),
+                    profileImageUrlResolver.resolve(sender.getProfileImageKey())
+            );
 
-        sseService.sendToClient(event.receiverId(), event.type().name(), data);
+            sseService.sendToClient(event.receiverId(), event.type().name(), data);
+        } catch (Exception e) {
+            log.warn("SSE 알림 전송 실패 (receiver={}): {}", event.receiverId(), e.getMessage());
+        }
     }
 }
