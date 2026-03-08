@@ -202,7 +202,7 @@ class FriendRequestServiceTest {
         FriendRequestEvent event = captor.getValue();
         assertEquals(2L, event.receiverId());
         assertEquals(NotificationType.FRIEND_REQUESTED, event.type());
-        assertEquals(1L, event.data());
+        assertEquals(1L, event.senderId());
     }
 
     @Test
@@ -218,7 +218,7 @@ class FriendRequestServiceTest {
         FriendRequestEvent event = captor.getValue();
         assertEquals(2L, event.receiverId());
         assertEquals(NotificationType.FRIEND_REQUEST_CANCELLED, event.type());
-        assertEquals(1L, event.data());
+        assertEquals(1L, event.senderId());
     }
 
     @Test
@@ -234,7 +234,7 @@ class FriendRequestServiceTest {
         FriendRequestEvent event = captor.getValue();
         assertEquals(1L, event.receiverId());
         assertEquals(NotificationType.FRIEND_REQUEST_ACCEPTED, event.type());
-        assertEquals(2L, event.data());
+        assertEquals(2L, event.senderId());
     }
 
     @Test
@@ -250,7 +250,7 @@ class FriendRequestServiceTest {
         FriendRequestEvent event = captor.getValue();
         assertEquals(1L, event.receiverId());
         assertEquals(NotificationType.FRIEND_REQUEST_REJECTED, event.type());
-        assertEquals(2L, event.data());
+        assertEquals(2L, event.senderId());
     }
 
     @Test

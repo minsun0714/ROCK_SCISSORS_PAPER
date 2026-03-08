@@ -1,6 +1,12 @@
 package com.rsp.battle.notification.application;
 
+import com.rsp.battle.common.exception.BusinessException;
+import com.rsp.battle.common.exception.ErrorCode;
 import com.rsp.battle.friendRequest.domain.event.FriendRequestEvent;
+import com.rsp.battle.friendRequest.domain.event.FriendRequestNotificationData;
+import com.rsp.battle.user.domain.User;
+import com.rsp.battle.user.persistence.UserRepository;
+import com.rsp.battle.user.presentation.ProfileImageUrlResolver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -13,10 +19,20 @@ import org.springframework.transaction.event.TransactionalEventListener;
 public class FriendRequestEventListener {
 
     private final SseService sseService;
+    private final UserRepository userRepository;
+    private final ProfileImageUrlResolver profileImageUrlResolver;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void sendNotification(FriendRequestEvent event) {
-        log.info("이벤트 수신: receiverId={}, type={}, data={}", event.receiverId(), event.type(), event.data());
-        sseService.sendToClient(event.receiverId(), event.type().name(), event.data());
+        User sender = userRepository.findById(event.senderId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        FriendRequestNotificationData data = new FriendRequestNotificationData(
+                sender.getId(),
+                sender.getNickname(),
+                profileImageUrlResolver.resolve(sender.getProfileImageKey())
+        );
+
+        sseService.sendToClient(event.receiverId(), event.type().name(), data);
     }
 }

@@ -5,6 +5,6 @@ import com.rsp.battle.notification.presentation.NotificationType;
 public record FriendRequestEvent(
         Long receiverId,
         NotificationType type,
-        Object data
+        Long senderId
 ) {
 }
