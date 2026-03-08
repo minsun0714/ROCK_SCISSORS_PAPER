@@ -25,8 +25,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     );
 
     @Query(
-            value = "SELECT * FROM users WHERE MATCH(nickname) AGAINST(:keyword IN BOOLEAN MODE) AND deleted_at IS NULL",
-            countQuery = "SELECT COUNT(*) FROM users WHERE MATCH(nickname) AGAINST(:keyword IN BOOLEAN MODE) AND deleted_at IS NULL",
+            value = "SELECT * FROM users WHERE (LENGTH(:keyword) < 2 OR MATCH(nickname) AGAINST(:keyword IN BOOLEAN MODE)) AND deleted_at IS NULL",
+            countQuery = "SELECT COUNT(*) FROM users WHERE (LENGTH(:keyword) < 2 OR MATCH(nickname) AGAINST(:keyword IN BOOLEAN MODE)) AND deleted_at IS NULL",
             nativeQuery = true
     )
     Page<User> searchByNickname(@Param("keyword") String keyword, Pageable pageable);
