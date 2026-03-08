@@ -33,7 +33,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query(
             value = """
-                    SELECT * FROM users AS u JOIN friend_request AS fr
+                    SELECT u.* FROM users AS u JOIN friend_request AS fr
                     ON (u.id = fr.requester_id OR u.id = fr.receiver_id) AND u.id != :userId
                     WHERE
                     (fr.requester_id = :userId OR fr.receiver_id = :userId)
