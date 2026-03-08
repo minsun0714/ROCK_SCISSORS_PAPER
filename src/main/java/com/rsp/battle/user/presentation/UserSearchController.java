@@ -26,7 +26,7 @@ public class UserSearchController {
     @GetMapping
     public ResponseEntity<Paginated<UserSearchResponse>> getPaginatedUsers(
             @AuthenticationPrincipal CustomUserPrincipal principal,
-            @RequestParam @Size(min = 2, message = "검색어는 2글자 이상이어야 합니다") String keyword,
+            @RequestParam(required = false, defaultValue = "") String keyword,
             Pageable pageable // page, size
     ) {
         Paginated<UserSearchResponse> response = userSearchService.searchUsers(principal, keyword, pageable);
