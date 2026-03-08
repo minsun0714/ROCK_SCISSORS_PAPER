@@ -47,7 +47,8 @@ public class FriendRequest {
      * generated column (STORED)
      * insert/update 불가
      */
-    @Column(name = "active_flag", insertable = false, updatable = false)
+    @Column(name = "active_flag", insertable = false, updatable = false,
+            columnDefinition = "TINYINT GENERATED ALWAYS AS (CASE WHEN status IN ('PENDING', 'ACCEPTED') THEN 1 ELSE NULL END) STORED")
     private Integer activeFlag;
 
     @Column(name = "created_at", nullable = false, updatable = false)
