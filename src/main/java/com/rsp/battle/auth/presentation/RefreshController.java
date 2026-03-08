@@ -51,6 +51,18 @@ public class RefreshController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(
+            @CookieValue(value = "refresh_token", required = false) String refreshTokenValue,
+            HttpServletResponse response
+    ) {
+        RefreshToken.fromNullable(refreshTokenValue)
+                .ifPresent(refreshTokenService::delete);
+
+        clearCookie(response, "refresh_token", "/auth/refresh");
+        return ResponseEntity.noContent().build();
+    }
+
     private void clearCookie(HttpServletResponse response, String name, String path) {
         ResponseCookie cookie = ResponseCookie.from(name, "")
                 .httpOnly(true)
