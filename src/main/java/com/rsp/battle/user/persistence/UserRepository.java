@@ -30,4 +30,34 @@ public interface UserRepository extends JpaRepository<User, Long> {
             nativeQuery = true
     )
     Page<User> searchByNickname(@Param("keyword") String keyword, Pageable pageable);
+
+    @Query(
+            value = """
+                    SELECT * FROM users AS u JOIN friend_request AS fr
+                    ON (u.id = fr.requester_id OR u.id = fr.receiver_id) AND u.id != :userId
+                    WHERE
+                    (fr.requester_id = :userId OR fr.receiver_id = :userId)
+                    AND fr.status = :status
+                    AND fr.active_flag IS NOT NULL
+                    AND (LENGTH(:keyword) < 2 OR MATCH(u.nickname) AGAINST(:keyword IN BOOLEAN MODE))
+                    AND u.deleted_at IS NULL
+                    """,
+            countQuery = """
+                    SELECT COUNT(*) FROM users AS u JOIN friend_request AS fr
+                    ON (u.id = fr.requester_id OR u.id = fr.receiver_id) AND u.id != :userId
+                    WHERE
+                    (fr.requester_id = :userId OR fr.receiver_id = :userId)
+                    AND fr.status = :status
+                    AND fr.active_flag IS NOT NULL
+                    AND (LENGTH(:keyword) < 2 OR MATCH(u.nickname) AGAINST(:keyword IN BOOLEAN MODE))
+                    AND u.deleted_at IS NULL
+                    """,
+            nativeQuery = true
+    )
+    Page<User> searchByNicknameAndFriendRequestStatus(
+            @Param("keyword") String keyword,
+            @Param("userId") Long userId, // 나의 친구 목록을 열람 또는 다른 사람의 친구 목록을 열람.
+            @Param("status") String friendRequestStatus,
+            Pageable pageable
+    );
 }
