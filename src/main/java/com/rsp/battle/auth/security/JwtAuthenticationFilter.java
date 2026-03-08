@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import jakarta.servlet.http.Cookie;
 import java.io.IOException;
 
 @Component
@@ -27,6 +28,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
 
         String token = extractAccessTokenFromHeader(request);
+
+        if (token == null && "/subscribe".equals(request.getServletPath())) {
+            token = extractAccessTokenFromCookie(request);
+        }
 
         if (token != null && jwtProvider.validateToken(token)) {
             Authentication authentication =
@@ -45,5 +50,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) return null;
 
         return authorizationHeader.substring(7);
+    }
+
+    private String extractAccessTokenFromCookie(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) return null;
+
+        for (Cookie cookie : cookies) {
+            if ("accessToken".equals(cookie.getName())) {
+                return cookie.getValue();
+            }
+        }
+        return null;
     }
 }
