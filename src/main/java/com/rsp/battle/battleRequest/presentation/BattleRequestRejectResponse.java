@@ -13,7 +13,7 @@ public record BattleRequestRejectResponse(
         return new BattleRequestRejectResponse(
                 battleRoom.getId(),
                 BattleStatus.REJECTED,
-                battleRoom.getClosedAt()
+                Instant.now()
         );
     }
 }

@@ -4,9 +4,7 @@ import com.rsp.battle.common.exception.BusinessException;
 import com.rsp.battle.common.exception.ErrorCode;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class BattleRoomTest {
 
@@ -60,7 +58,7 @@ class BattleRoomTest {
         room.close();
 
         assertEquals(BattleRoomStatus.CLOSED, room.getStatus());
-        assertNotNull(room.getClosedAt());
+        assertNull(room.getActiveFlag());
     }
 
     @Test
@@ -84,6 +82,6 @@ class BattleRoomTest {
         room.close();
 
         assertEquals(BattleRoomStatus.CLOSED, room.getStatus());
-        assertNotNull(room.getClosedAt());
+        assertNull(room.getActiveFlag());
     }
 }

@@ -63,9 +63,6 @@ public class BattleRoom {
         this.createdAt = Instant.now();
     }
 
-    @Column(name = "closed_at")
-    private Instant closedAt;
-
     public static BattleRoom create(Long requesterId, Long opponentId) {
 
         if (requesterId.equals(opponentId)) {
@@ -96,6 +93,5 @@ public class BattleRoom {
             throw new BusinessException(ErrorCode.BATTLE_ROOM_CLOSED);
         }
         status = BattleRoomStatus.CLOSED;
-        closedAt = Instant.now();
     }
 }
