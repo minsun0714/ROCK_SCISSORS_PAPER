@@ -22,8 +22,13 @@ public enum ErrorCode {
     SELF_FRIEND_REQUEST_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "FRIEND_REQUEST_400", "자기 자신에게 친구 요청을 할 수 없습니다."),
     FRIEND_REQUEST_NOT_FOUND(HttpStatus.NOT_FOUND, "FRIEND_REQUEST_404", "친구 요청이 존재하지 않습니다."),
     DUPLICATE_FRIEND_REQUEST(HttpStatus.CONFLICT, "FRIEND_REQUEST_409_1", "이미 전송된 친구 요청입니다."),
-    FRIEND_REQUEST_CLOSED(HttpStatus.CONFLICT, "FRIEND_REQUEST_409_2", "더 이상 존재하지 않는 친구 요청입니다.");
+    FRIEND_REQUEST_CLOSED(HttpStatus.CONFLICT, "FRIEND_REQUEST_409_2", "더 이상 존재하지 않는 친구 요청입니다."),
 
+    // ===== BattleRequest =====
+    SELF_BATTLE_REQUEST_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "BATTLE_REQUEST_400", "자기 자신에게 배틀 요청을 할 수 없습니다."),
+    BATTLE_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "BATTLE_REQUEST_404", "배틀 요청이 존재하지 않습니다."),
+    DUPLICATE_BATTLE_REQUEST(HttpStatus.CONFLICT, "BATTLE_REQUEST_409_1", "이미 전송된 배틀 요청입니다."),
+    BATTLE_ROOM_CLOSED(HttpStatus.CONFLICT, "BATTLE_REQUEST_409_2", "더 이상 존재하지 않는 배틀 요청입니다.");
 
     private final HttpStatus status;
     private final String code;
