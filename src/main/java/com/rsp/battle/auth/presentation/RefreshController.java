@@ -5,6 +5,7 @@ import com.rsp.battle.auth.domain.RefreshToken;
 import com.rsp.battle.auth.application.RefreshTokenService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
+@Slf4j
 public class RefreshController {
 
     @Value("${app.cookie.secure}")
@@ -34,7 +36,11 @@ public class RefreshController {
             HttpServletResponse response
     ) {
         Optional<RefreshToken> refreshToken = RefreshToken.fromNullable(refreshTokenValue);
+        log.info("refreshToken: {}", refreshToken);
+        refreshToken.ifPresent(token -> log.info("user: {}", refreshTokenService.getUserId(token)));
+
         if (refreshToken.isEmpty()) {
+            log.info("refresh token is empty");
             clearCookie(response, "refresh_token", "/auth/refresh");
             return ResponseEntity.status(401).build();
         }
