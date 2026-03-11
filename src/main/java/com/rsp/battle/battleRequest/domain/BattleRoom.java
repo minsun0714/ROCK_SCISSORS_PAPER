@@ -88,6 +88,10 @@ public class BattleRoom {
         status = BattleRoomStatus.IN_PROGRESS;
     }
 
+    public Long increaseRoundNumber() {
+        return id + 1;
+    }
+
     public void close() {
         if (status == BattleRoomStatus.CLOSED) {
             throw new BusinessException(ErrorCode.BATTLE_ROOM_CLOSED);
