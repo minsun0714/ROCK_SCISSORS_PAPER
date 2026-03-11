@@ -35,7 +35,7 @@ public class BattleRoomManager {
     }
 
     private final static Integer ROOM_MAX_SIZE = 2;
-    private final static Integer WAIT_SECONDS_UNTIL_OPPONENT_ENTER_ROOM = 60 * 3;
+    private final static Integer WAIT_SECONDS_UNTIL_OPPONENT_ENTER_ROOM = 60 * 5;
     private final static Integer WAIT_SECONDS_UNTIL_OPPONENT_MOVE = 30;
 
     public void join(WebSocketSession currentSession) {
