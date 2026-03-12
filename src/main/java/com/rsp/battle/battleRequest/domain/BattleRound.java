@@ -51,7 +51,7 @@ public class BattleRound {
     private Move opponentMove;
 
     @Column(name = "winner_user_id")
-    private Long winnerUserId = null;
+    private Long winnerUserId;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
