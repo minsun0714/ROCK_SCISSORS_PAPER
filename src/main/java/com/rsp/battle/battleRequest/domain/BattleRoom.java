@@ -27,6 +27,9 @@ public class BattleRoom {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "latest_round_number", nullable = false)
+    private Long latestRoundNumber;
+
     @Column(name = "requester_id", nullable = false)
     private Long requester;
 
@@ -73,6 +76,7 @@ public class BattleRoom {
         Long high = Math.max(requesterId, opponentId);
 
         return BattleRoom.builder()
+                .latestRoundNumber(0L)
                 .requester(requesterId)
                 .opponent(opponentId)
                 .userLowId(low)
@@ -86,6 +90,10 @@ public class BattleRoom {
             throw new BusinessException(ErrorCode.BATTLE_ROOM_CLOSED);
         }
         status = BattleRoomStatus.IN_PROGRESS;
+    }
+
+    public Long increaseRoundNumber() {
+        return latestRoundNumber = latestRoundNumber + 1;
     }
 
     public void close() {
