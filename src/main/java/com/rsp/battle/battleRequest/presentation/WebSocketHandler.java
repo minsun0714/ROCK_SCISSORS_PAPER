@@ -45,9 +45,13 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	// 배틀 룸 퇴장
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
 		log.info("WebSocket connection closed: {}, status: {}", session.getId(), status);
+
+        manager.leave(session);
 	}
 
 	public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
 		log.error("WebSocket transport error in session: {}", session.getId(), exception);
+
+        manager.leave(session);
 	}
 }

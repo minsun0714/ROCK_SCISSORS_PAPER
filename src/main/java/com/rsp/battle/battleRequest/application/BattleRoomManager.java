@@ -45,8 +45,8 @@ public class BattleRoomManager {
         Room room = rooms.computeIfAbsent(roomId, r -> new Room()); // getOrDefault에서 동시성 이슈로 변경
 
         // 새로고침 등으로 인한 재접속 고려
-        room.sessions.removeIf(s ->
-                s.getAttributes().get("userId").equals(userId)
+        room.sessions.removeIf(oldSession ->
+                oldSession.getAttributes().get("userId").equals(userId)
         );
 
         if (room.sessions.size() >= ROOM_MAX_SIZE
@@ -59,7 +59,10 @@ public class BattleRoomManager {
 
         if (room.sessions.size() < ROOM_MAX_SIZE) {
             room.timer = setTimer(roomId, () -> {
-                broadcast(roomId, "상대방이 5분 동안 입장하지 않아 배틀이 종료됩니다.");
+                broadcast(roomId, WebSocketResponse.of(
+                        WebSocketMessageType.ROOM_CLOSED,
+                        "상대방이 5분 동안 입장하지 않아 배틀이 종료됩니다."
+                ));
                 for (WebSocketSession s : room.sessions) {
                     closeSession(s);
                 }
@@ -70,13 +73,15 @@ public class BattleRoomManager {
         if (room.sessions.size() == ROOM_MAX_SIZE) {
             Objects.requireNonNull(room.timer).cancel(true);
 
-            broadcast(roomId, "상대방 입장, 배틀 시작");
-            battleService.startBattleRound(roomId);
+            startBattle(roomId);
         }
     }
 
     public void startBattle(Long roomId) {
-        broadcast(roomId, "새로운 배틀 시작");
+        broadcast(roomId, WebSocketResponse.of(
+                WebSocketMessageType.BATTLE_START,
+                "새로운 배틀 시작"
+        ));
         battleService.startBattleRound(roomId);
     }
 
@@ -85,7 +90,12 @@ public class BattleRoomManager {
 
         if (!Move.isValid(move)) {
             try {
-                session.sendMessage(new TextMessage("선택이 유효하지 않습니다. 선택을 다시 제출해주세요."));
+                session.sendMessage(new TextMessage(objectMapper.writeValueAsString(
+                        WebSocketResponse.of(
+                                WebSocketMessageType.ERROR,
+                                "선택이 유효하지 않습니다."
+                        )
+                )));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -102,14 +112,43 @@ public class BattleRoomManager {
 
         if (!bothMoved) {
             room.timer = setTimer(roomId, () -> {
-                broadcast(roomId, "상대가 선택하지 않아 배틀이 종료됩니다");
-                battleService.decideWinner(roomId);
+                BattleResultResponse response = battleService.decideWinner(roomId);
+                broadcast(roomId, WebSocketResponse.of(
+                        WebSocketMessageType.BATTLE_FINISHED,
+                        response
+                ));
             }, WAIT_SECONDS_UNTIL_OPPONENT_MOVE);
         } else {
             Objects.requireNonNull(room.timer).cancel(true);
             BattleResultResponse response = battleService.decideWinner(roomId);
-            broadcast(roomId, response);
+            broadcast(roomId, WebSocketResponse.of(
+                    WebSocketMessageType.BATTLE_FINISHED,
+                    response
+            ));
         }
+    }
+
+    public void leave(WebSocketSession session) {
+        Long roomId = (Long) session.getAttributes().get("roomId");
+        Room room = rooms.get(roomId);
+
+        if (room == null) return;
+
+        room.sessions.remove(session);
+
+        if (room.timer != null) room.timer.cancel(true);
+
+        if (!room.sessions.isEmpty()) {
+            broadcast(roomId, WebSocketResponse.of(
+                    WebSocketMessageType.ROOM_CLOSED,
+                    "상대방이 퇴장했습니다."
+            ));
+            for (WebSocketSession s : room.sessions) {
+                closeSession(s);
+            }
+        }
+
+        rooms.remove(roomId);
     }
 
     private ScheduledFuture<?> setTimer(Long roomId, Runnable task, Integer second) {
