@@ -29,6 +29,7 @@ public class BattleRequestEventListener {
                     .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
             BattleRequestNotificationData data = new BattleRequestNotificationData(
+                    event.roomId(),
                     sender.getId(),
                     sender.getNickname(),
                     profileImageUrlResolver.resolve(sender.getProfileImageKey())

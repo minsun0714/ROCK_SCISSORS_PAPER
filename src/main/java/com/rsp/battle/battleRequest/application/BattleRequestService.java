@@ -48,7 +48,7 @@ public class BattleRequestService {
 
         eventPublisher.publishEvent(
                 new BattleRequestEvent(
-                        targetUserId, NotificationType.BATTLE_REQUESTED, userId
+                        targetUserId, NotificationType.BATTLE_REQUESTED, userId, battleRoom.getId()
                 )
         );
 
@@ -72,7 +72,7 @@ public class BattleRequestService {
 
         eventPublisher.publishEvent(
                 new BattleRequestEvent(
-                        battleRoom.getOpponent(), NotificationType.BATTLE_REQUEST_CANCELLED, userId
+                        battleRoom.getOpponent(), NotificationType.BATTLE_REQUEST_CANCELLED, userId, battleRoom.getId()
                 )
         );
     }
@@ -89,7 +89,7 @@ public class BattleRequestService {
 
         eventPublisher.publishEvent(
                 new BattleRequestEvent(
-                        battleRoom.getRequester(), NotificationType.BATTLE_REQUEST_ACCEPTED, userId
+                        battleRoom.getRequester(), NotificationType.BATTLE_REQUEST_ACCEPTED, userId, battleRoom.getId()
                 )
         );
 
@@ -109,7 +109,7 @@ public class BattleRequestService {
 
         eventPublisher.publishEvent(
                 new BattleRequestEvent(
-                        battleRoom.getRequester(), NotificationType.BATTLE_REQUEST_REJECTED, userId
+                        battleRoom.getRequester(), NotificationType.BATTLE_REQUEST_REJECTED, userId, battleRoom.getId()
                 )
         );
 
