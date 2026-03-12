@@ -87,7 +87,7 @@ public class BattleRoomManager {
         rooms.get(roomId).timer = setTimer(roomId, () -> {
             broadcast(roomId, WebSocketResponse.of(
                     WebSocketMessageType.BATTLE_FINISHED,
-                    "30초 동안 손모양을 선택하지 않아 배틀이 무효 처리 되었습니다."
+                    "30초 동안 손모양을 선택하지 않아 무승부 처리 되었습니다."
             ));
         }, WAIT_SECONDS_UNTIL_OPPONENT_MOVE);
     }
