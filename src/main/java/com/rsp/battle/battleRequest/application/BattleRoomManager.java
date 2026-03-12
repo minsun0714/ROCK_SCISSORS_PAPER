@@ -71,7 +71,7 @@ public class BattleRoomManager {
         }
 
         if (room.sessions.size() == ROOM_MAX_SIZE) {
-            Objects.requireNonNull(room.timer).cancel(true);
+            closeTimer(roomId);
 
             startBattle(roomId);
         }
@@ -83,6 +83,13 @@ public class BattleRoomManager {
                 "새로운 배틀 시작"
         ));
         battleService.startBattleRound(roomId);
+
+        rooms.get(roomId).timer = setTimer(roomId, () -> {
+            broadcast(roomId, WebSocketResponse.of(
+                    WebSocketMessageType.BATTLE_FINISHED,
+                    "30초 동안 손모양을 선택하지 않아 배틀이 무효 처리 되었습니다."
+            ));
+        }, WAIT_SECONDS_UNTIL_OPPONENT_MOVE);
     }
 
     public void playBattle(Long roomId, WebSocketSession session, String move) {
@@ -114,6 +121,8 @@ public class BattleRoomManager {
 
         Room room = rooms.get(roomId);
 
+        closeTimer(roomId);
+
         if (!bothMoved) {
             room.timer = setTimer(roomId, () -> {
                 BattleResultResponse response = battleService.decideWinner(roomId);
@@ -123,7 +132,6 @@ public class BattleRoomManager {
                 ));
             }, WAIT_SECONDS_UNTIL_OPPONENT_MOVE);
         } else {
-            Objects.requireNonNull(room.timer).cancel(true);
             BattleResultResponse response = battleService.decideWinner(roomId);
             broadcast(roomId, WebSocketResponse.of(
                     WebSocketMessageType.BATTLE_FINISHED,
@@ -164,6 +172,10 @@ public class BattleRoomManager {
                 log.error("{}분 타임아웃 처리 실패: roomId={}", second / 60, roomId, e);
             }
         }, second, TimeUnit.SECONDS);
+    }
+
+    private void closeTimer(Long roomId) {
+        Objects.requireNonNull(rooms.get(roomId).timer).cancel(true);
     }
 
     private void broadcast(Long roomId, Object data) {
