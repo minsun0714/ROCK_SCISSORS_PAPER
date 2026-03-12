@@ -86,6 +86,10 @@ public class BattleRoomManager {
     }
 
     public void playBattle(Long roomId, WebSocketSession session, String move) {
+        if (rooms.get(roomId).sessions.size() < ROOM_MAX_SIZE) {
+            return;
+        }
+
         Long userId = (Long) session.getAttributes().get("userId");
 
         if (!Move.isValid(move)) {
