@@ -25,9 +25,11 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		log.info("WebSocket connection established: {}", currentSession.getId());
 
         manager.join(currentSession);
+        log.info("join : {}", currentSession.getAttributes().get("userId"));
 	}
 
 	public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+        log.info("message: {}", message);
 		log.info("Received message: {} from session: {}", message.getPayload(), session.getId());
 
         JsonNode json = objectMapper.readTree(message.getPayload());
@@ -45,12 +47,13 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	// 배틀 룸 퇴장
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
 		log.info("WebSocket connection closed: {}, status: {}", session.getId(), status);
-
+        log.info("message {}", status.getReason());
         manager.leave(session);
 	}
 
 	public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
 		log.error("WebSocket transport error in session: {}", session.getId(), exception);
+        log.error("error message: {} {}", exception.fillInStackTrace(), exception.getStackTrace());
 
         manager.leave(session);
 	}

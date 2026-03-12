@@ -18,7 +18,6 @@ import org.springframework.web.socket.server.HandshakeInterceptor;
 
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -38,7 +37,10 @@ public class WebSocketInterceptor implements HandshakeInterceptor {
                 .getServletRequest()
                 .getParameter("roomId");
 
+        log.info("[WS handshake] roomId={}, tokenPresent={}", roomIdParam, tokenParam != null);
+
         if (tokenParam == null || !jwtProvider.validateToken(tokenParam) || roomIdParam == null) {
+            log.warn("[WS handshake] 토큰 또는 roomId 검증 실패");
             return false;
         }
 
@@ -52,9 +54,14 @@ public class WebSocketInterceptor implements HandshakeInterceptor {
 
         BattleRoom battleRoom = battleRoomRepository.findById(roomId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.BATTLE_ROOM_NOT_FOUND));
+
+        log.info("[WS handshake] userId={}, requester={}, opponent={}, status={}",
+                userId, battleRoom.getRequester(), battleRoom.getOpponent(), battleRoom.getStatus());
+
         if (!Objects.equals(battleRoom.getOpponent(), userId)
                 && !Objects.equals(battleRoom.getRequester(), userId)
         ) {
+            log.warn("[WS handshake] 방 참가 권한 없음: userId={}", userId);
             return false;
         }
 
