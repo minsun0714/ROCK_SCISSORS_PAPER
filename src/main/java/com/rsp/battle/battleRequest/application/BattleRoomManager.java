@@ -149,6 +149,7 @@ public class BattleRoomManager {
         }
 
         rooms.remove(roomId);
+        battleService.close(roomId);
     }
 
     private ScheduledFuture<?> setTimer(Long roomId, Runnable task, Integer second) {

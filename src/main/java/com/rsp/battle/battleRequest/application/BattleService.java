@@ -58,4 +58,11 @@ public class BattleService {
 
         return BattleResultResponse.from(battleRound);
     }
+
+    @Transactional
+    public void close(Long roomId) {
+        BattleRoom room = battleRoomRepository.findByIdForUpdate(roomId);
+
+        room.close();
+    }
 }
