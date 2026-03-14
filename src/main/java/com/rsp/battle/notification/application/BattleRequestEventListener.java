@@ -1,7 +1,7 @@
 package com.rsp.battle.notification.application;
 
-import com.rsp.battle.battleRequest.domain.event.BattleRequestEvent;
-import com.rsp.battle.battleRequest.domain.event.BattleRequestNotificationData;
+import com.rsp.battle.battle.domain.event.BattleRequestEvent;
+import com.rsp.battle.battle.domain.event.BattleRequestNotificationData;
 import com.rsp.battle.common.exception.BusinessException;
 import com.rsp.battle.common.exception.ErrorCode;
 import com.rsp.battle.user.domain.User;
