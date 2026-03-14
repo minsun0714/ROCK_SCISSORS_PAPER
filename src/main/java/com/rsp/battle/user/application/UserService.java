@@ -99,6 +99,18 @@ public class UserService {
     }
 
     @Transactional
+    public void updateNickname(Long userId, String nickname) {
+        if (userRepository.existsByNicknameAndDeletedAtIsNull(nickname)) {
+            throw new BusinessException(ErrorCode.DUPLICATE_NICKNAME);
+        }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        user.updateNickname(nickname);
+    }
+
+    @Transactional
     public void updateProfilePictureKey(Long userId, ProfilePictureUpdateRequest profilePictureUpdateRequest) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
