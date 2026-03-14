@@ -1,7 +1,7 @@
 package com.rsp.battle.common.config;
 
-import com.rsp.battle.battleRequest.application.BattleRoomManager;
-import com.rsp.battle.battleRequest.presentation.WebSocketInterceptor;
+import com.rsp.battle.battle.room.application.BattleRoomManager;
+import com.rsp.battle.battle.room.presentation.WebSocketInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -10,7 +10,7 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
-import com.rsp.battle.battleRequest.presentation.WebSocketHandler;
+import com.rsp.battle.battle.room.presentation.WebSocketHandler;
 
 @Configuration
 @EnableWebSocket
