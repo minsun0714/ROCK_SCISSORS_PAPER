@@ -51,21 +51,28 @@ public class BattleRoundQueryService {
                 keyword,
                 battleResult != null ? battleResult.name() : null,
                 pageable
-        ).map(battleRoundHistoryProjection -> {
-                    Move myMove = Objects.equals(userId, battleRoundHistoryProjection.getRequesterId())
-                            ? battleRoundHistoryProjection.getRequesterMove()
-                            : battleRoundHistoryProjection.getOpponentMove();
-                    Move opponentMove = Objects.equals(userId, battleRoundHistoryProjection.getRequesterId())
-                            ? battleRoundHistoryProjection.getOpponentMove()
-                            : battleRoundHistoryProjection.getRequesterMove();
+        ).map(projection -> {
+                    Move myMove = Objects.equals(userId, projection.getRequesterId())
+                            ? projection.getRequesterMove()
+                            : projection.getOpponentMove();
+                    Move opponentMove = Objects.equals(userId, projection.getRequesterId())
+                            ? projection.getOpponentMove()
+                            : projection.getRequesterMove();
+
+                    BattleResult result = projection.getWinnerUserId() == null
+                            ? BattleResult.DRAW
+                            : Objects.equals(userId, projection.getWinnerUserId())
+                                    ? BattleResult.WIN
+                                    : BattleResult.LOSE;
 
                     return new BattleRoundHistoryResponse(
-                            battleRoundHistoryProjection.getId(),
-                            battleRoundHistoryProjection.getNickName(),
-                            battleRoundHistoryProjection.getProfileImageKey(),
+                            projection.getId(),
+                            projection.getNickName(),
+                            projection.getProfileImageKey(),
                             myMove,
                             opponentMove,
-                            battleRoundHistoryProjection.getCreatedAt()
+                            result,
+                            projection.getCreatedAt()
                     );
                 });
 
