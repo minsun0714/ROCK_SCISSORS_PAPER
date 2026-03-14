@@ -94,6 +94,9 @@ class BattleRoomManagerTest {
         WebSocketSession session1Reconnect = mockSession(1L, 10L);
 
         manager.join(session1);
+
+        // 새로고침: 기존 세션이 닫힌 상태에서 재접속
+        when(session1.isOpen()).thenReturn(false);
         manager.join(session1Reconnect);
 
         // 재접속이므로 여전히 1명 — 배틀 시작 안 됨
