@@ -12,8 +12,10 @@ import org.springframework.web.socket.WebSocketSession;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.*;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -44,11 +46,17 @@ public class BattleRoomManager {
 
         Room room = rooms.computeIfAbsent(roomId, r -> new Room()); // getOrDefault에서 동시성 이슈로 변경
 
-        // 새로고침 등으로 인한 재접속 고려
-        room.sessions.removeIf(oldSession ->
-                oldSession.getAttributes().get("userId").equals(userId)
-                    && !oldSession.isOpen()
-        );
+        Optional<WebSocketSession> myOldSession = room.sessions.stream()
+                .filter(s -> s.getAttributes().get("userId").equals(userId))
+                .findFirst();
+
+        if (myOldSession.isPresent()) {
+            if (myOldSession.get().isOpen()) {
+                closeSession(currentSession);
+                return;
+            }
+            room.sessions.remove(myOldSession.get());
+        }
 
         if (room.sessions.size() >= ROOM_MAX_SIZE
                 || !room.sessions.isEmpty() && Objects.requireNonNull(room.timer).isDone()) {
