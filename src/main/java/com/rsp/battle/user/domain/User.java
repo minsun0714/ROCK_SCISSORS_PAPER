@@ -27,6 +27,9 @@ public class User {
     private String email;
 
     @Column(nullable = false, length = 50)
+    private String name;
+
+    @Column(length = 50)
     private String nickname;
 
     @Column(name = "profile_image_key", length = 255)
@@ -71,13 +74,17 @@ public class User {
        ========================= */
 
     public static User createFromOAuth(String email,
-                                       String nickname,
+                                       String name,
                                        String provider) {
         return User.builder()
                 .email(email)
-                .nickname(nickname)
+                .name(name)
                 .oauthProvider(provider)
                 .build();
+    }
+
+    public void updateNickname(String newNickname) {
+        this.nickname = newNickname;
     }
 
     // 상태 메시지 변경
