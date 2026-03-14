@@ -149,7 +149,8 @@ public class BattleRoomManager {
 
         if (room.timer != null) room.timer.cancel(true);
 
-        room.sessions.remove(session);
+        boolean isRemoved = room.sessions.remove(session);
+        if (!isRemoved) return;
 
         if (!room.sessions.isEmpty()) {
             broadcast(roomId, WebSocketResponse.of(
