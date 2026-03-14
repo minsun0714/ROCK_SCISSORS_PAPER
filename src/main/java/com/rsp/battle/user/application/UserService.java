@@ -40,13 +40,16 @@ public class UserService {
     @Transactional
     public User createIfNotExists(OAuth2User oAuth2User) {
         String email = oAuth2User.getAttribute("email");
-        String nickname = oAuth2User.getAttribute("name");
+        String name = oAuth2User.getAttribute("name");
         String OAUTH_PROVIDER = "GOOGLE";
 
         return userRepository.findActiveUserByEmailAndAuthProvider(email, "GOOGLE")
                 .orElseGet(() -> {
-                    User newUser = User.createFromOAuth(email, nickname, OAUTH_PROVIDER);
-                    return userRepository.save(newUser);
+                    User newUser = User.createFromOAuth(email, name, OAUTH_PROVIDER);
+                    User savedUser = userRepository.save(newUser);
+
+                    savedUser.updateNickname(savedUser.getName() + "#" + savedUser.getId());
+                    return savedUser;
                 });
     }
 

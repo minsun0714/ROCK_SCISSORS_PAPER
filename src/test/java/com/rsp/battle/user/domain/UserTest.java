@@ -12,7 +12,8 @@ class UserTest {
 
         assertNull(user.getId());
         assertEquals("user@example.com", user.getEmail());
-        assertEquals("tester", user.getNickname());
+        assertEquals("tester", user.getName());
+        assertNull(user.getNickname());
         assertEquals("google", user.getOauthProvider());
         assertNull(user.getProfileImageKey());
         assertNull(user.getStatusMessage());

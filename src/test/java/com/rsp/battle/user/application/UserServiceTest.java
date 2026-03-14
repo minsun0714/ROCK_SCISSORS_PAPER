@@ -106,7 +106,7 @@ class UserServiceTest {
         User savedUser = userCaptor.getValue();
 
         assertEquals("new@example.com", savedUser.getEmail());
-        assertEquals("newbie", savedUser.getNickname());
+        assertEquals("newbie", savedUser.getName());
         assertEquals("GOOGLE", savedUser.getOauthProvider());
         assertEquals(savedUser, result);
     }
