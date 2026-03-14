@@ -60,6 +60,19 @@ public class BattleService {
     }
 
     @Transactional
+    public BattleResultResponse forfeit(Long roomId) {
+        BattleRound battleRound = battleRoundRepository.findFirstByRoomIdOrderByRoundNumberDesc(roomId);
+
+        if (battleRound != null && !battleRound.isComplete()
+                && (battleRound.getRequesterMove() != null || battleRound.getOpponentMove() != null)) {
+            battleRound.decideWinner();
+            return BattleResultResponse.from(battleRound);
+        }
+
+        return null;
+    }
+
+    @Transactional
     public void close(Long roomId) {
         BattleRoom room = battleRoomRepository.findByIdForUpdate(roomId);
 
