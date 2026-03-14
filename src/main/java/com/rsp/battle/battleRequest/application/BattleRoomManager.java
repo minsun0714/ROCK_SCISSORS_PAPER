@@ -146,9 +146,9 @@ public class BattleRoomManager {
 
         if (room == null) return;
 
-        room.sessions.remove(session);
-
         if (room.timer != null) room.timer.cancel(true);
+
+        room.sessions.remove(session);
 
         if (!room.sessions.isEmpty()) {
             broadcast(roomId, WebSocketResponse.of(
@@ -158,10 +158,10 @@ public class BattleRoomManager {
             for (WebSocketSession s : room.sessions) {
                 closeSession(s);
             }
+            battleService.close(roomId);
         }
 
         rooms.remove(roomId);
-        battleService.close(roomId);
     }
 
     private ScheduledFuture<?> setTimer(Long roomId, Runnable task, Integer second) {
