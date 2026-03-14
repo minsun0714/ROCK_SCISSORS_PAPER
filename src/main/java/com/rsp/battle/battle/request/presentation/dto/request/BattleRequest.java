@@ -1,4 +1,4 @@
-package com.rsp.battle.battle.presentation.dto.request;
+package com.rsp.battle.battle.request.presentation.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 import org.springframework.format.annotation.NumberFormat;

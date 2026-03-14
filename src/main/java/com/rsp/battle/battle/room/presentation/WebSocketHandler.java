@@ -1,8 +1,8 @@
-package com.rsp.battle.battle.presentation;
+package com.rsp.battle.battle.room.presentation;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rsp.battle.battle.application.BattleRoomManager;
+import com.rsp.battle.battle.room.application.BattleRoomManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -11,7 +11,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import lombok.extern.slf4j.Slf4j;
 
-import static com.rsp.battle.battle.presentation.MessageType.*;
+import static com.rsp.battle.battle.room.presentation.MessageType.*;
 
 @Slf4j
 @RequiredArgsConstructor

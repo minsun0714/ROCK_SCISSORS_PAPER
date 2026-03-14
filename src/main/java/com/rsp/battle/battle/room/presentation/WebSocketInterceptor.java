@@ -1,4 +1,4 @@
-package com.rsp.battle.battle.presentation;
+package com.rsp.battle.battle.room.presentation;
 
 import com.rsp.battle.auth.domain.CustomUserPrincipal;
 import com.rsp.battle.auth.infrastructure.JwtProvider;

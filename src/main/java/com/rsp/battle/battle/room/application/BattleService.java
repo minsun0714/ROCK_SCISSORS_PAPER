@@ -1,11 +1,11 @@
-package com.rsp.battle.battle.application;
+package com.rsp.battle.battle.room.application;
 
 import com.rsp.battle.battle.domain.BattleRoom;
 import com.rsp.battle.battle.domain.BattleRound;
 import com.rsp.battle.battle.domain.Move;
 import com.rsp.battle.battle.persistence.BattleRoomRepository;
 import com.rsp.battle.battle.persistence.BattleRoundRepository;
-import com.rsp.battle.battle.presentation.dto.response.BattleResultResponse;
+import com.rsp.battle.battle.request.presentation.dto.response.BattleResultResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

@@ -1,4 +1,4 @@
-package com.rsp.battle.battle.presentation;
+package com.rsp.battle.battle.room.presentation;
 
 public class MessageType {
     public static final String CHOICE = "CHOICE";

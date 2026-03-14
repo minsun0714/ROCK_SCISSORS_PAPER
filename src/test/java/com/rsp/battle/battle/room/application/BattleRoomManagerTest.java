@@ -1,8 +1,10 @@
-package com.rsp.battle.battle.application;
+package com.rsp.battle.battle.room.application;
 
 import com.rsp.battle.battle.domain.BattleRound;
 import com.rsp.battle.battle.domain.Move;
-import com.rsp.battle.battle.presentation.dto.response.BattleResultResponse;
+import com.rsp.battle.battle.request.presentation.dto.response.BattleResultResponse;
+import com.rsp.battle.battle.room.application.BattleRoomManager;
+import com.rsp.battle.battle.room.application.BattleService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

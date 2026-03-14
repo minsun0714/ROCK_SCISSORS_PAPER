@@ -1,9 +1,11 @@
-package com.rsp.battle.battle.application;
+package com.rsp.battle.battle.room.application;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rsp.battle.battle.room.presentation.WebSocketMessageType;
+import com.rsp.battle.battle.room.presentation.WebSocketResponse;
 import com.rsp.battle.battle.domain.Move;
-import com.rsp.battle.battle.presentation.dto.response.BattleResultResponse;
+import com.rsp.battle.battle.request.presentation.dto.response.BattleResultResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;

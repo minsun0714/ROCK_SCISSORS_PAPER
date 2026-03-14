@@ -1,11 +1,11 @@
-package com.rsp.battle.battle.presentation;
+package com.rsp.battle.battle.request.presentation;
 
 import com.rsp.battle.auth.domain.CustomUserPrincipal;
-import com.rsp.battle.battle.application.BattleRequestService;
-import com.rsp.battle.battle.presentation.dto.request.BattleRequest;
-import com.rsp.battle.battle.presentation.dto.response.BattleRequestAcceptResponse;
-import com.rsp.battle.battle.presentation.dto.response.BattleRequestRejectResponse;
-import com.rsp.battle.battle.presentation.dto.response.BattleRequestResponse;
+import com.rsp.battle.battle.request.application.BattleRequestService;
+import com.rsp.battle.battle.request.presentation.dto.request.BattleRequest;
+import com.rsp.battle.battle.request.presentation.dto.response.BattleRequestAcceptResponse;
+import com.rsp.battle.battle.request.presentation.dto.response.BattleRequestRejectResponse;
+import com.rsp.battle.battle.request.presentation.dto.response.BattleRequestResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

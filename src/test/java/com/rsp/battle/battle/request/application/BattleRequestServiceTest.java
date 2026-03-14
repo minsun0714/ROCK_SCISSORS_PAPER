@@ -1,13 +1,14 @@
-package com.rsp.battle.battle.application;
+package com.rsp.battle.battle.request.application;
 
 import com.rsp.battle.battle.domain.BattleRoom;
 import com.rsp.battle.battle.domain.BattleRoomStatus;
 import com.rsp.battle.battle.domain.event.BattleRequestEvent;
 import com.rsp.battle.battle.persistence.BattleRoomRepository;
-import com.rsp.battle.battle.presentation.dto.response.BattleRequestAcceptResponse;
-import com.rsp.battle.battle.presentation.dto.response.BattleRequestRejectResponse;
-import com.rsp.battle.battle.presentation.BattleStatus;
-import com.rsp.battle.battle.presentation.dto.response.BattleRequestResponse;
+import com.rsp.battle.battle.request.application.BattleRequestService;
+import com.rsp.battle.battle.request.presentation.dto.response.BattleRequestAcceptResponse;
+import com.rsp.battle.battle.request.presentation.dto.response.BattleRequestRejectResponse;
+import com.rsp.battle.battle.request.presentation.BattleStatus;
+import com.rsp.battle.battle.request.presentation.dto.response.BattleRequestResponse;
 import com.rsp.battle.common.exception.BusinessException;
 import com.rsp.battle.common.exception.ErrorCode;
 import com.rsp.battle.notification.presentation.NotificationType;

@@ -1,4 +1,4 @@
-package com.rsp.battle.battle.presentation;
+package com.rsp.battle.battle.request.presentation;
 
 public enum BattleStatus {
     REQUESTED,

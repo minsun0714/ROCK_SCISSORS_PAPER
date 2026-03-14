@@ -1,4 +1,4 @@
-package com.rsp.battle.battle.presentation.dto.response;
+package com.rsp.battle.battle.request.presentation.dto.response;
 
 import com.rsp.battle.battle.domain.BattleRound;
 import com.rsp.battle.battle.domain.Move;
