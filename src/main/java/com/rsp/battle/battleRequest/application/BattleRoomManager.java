@@ -189,6 +189,9 @@ public class BattleRoomManager {
     }
 
     private void broadcast(Long roomId, Object data) {
+        Room room = rooms.get(roomId);
+        if (room == null) return;
+
         String message = null;
         try {
             message = objectMapper.writeValueAsString(data);
@@ -196,7 +199,7 @@ public class BattleRoomManager {
             throw new RuntimeException(e);
         }
 
-        for (WebSocketSession s : rooms.get(roomId).sessions) {
+        for (WebSocketSession s : room.sessions) {
             try {
                 s.sendMessage(new TextMessage(message));
             } catch (IOException e) {
