@@ -95,9 +95,10 @@ public class BattleRoomManager {
         battleService.startBattleRound(roomId);
 
         rooms.get(roomId).timer = setTimer(roomId, () -> {
+            BattleResultResponse response = battleService.decideWinner(roomId);
             broadcast(roomId, WebSocketResponse.of(
                     WebSocketMessageType.BATTLE_FINISHED,
-                    "30초 동안 손모양을 선택하지 않아 무승부 처리 되었습니다."
+                    response
             ));
         }, WAIT_SECONDS_UNTIL_OPPONENT_MOVE);
     }
@@ -162,6 +163,13 @@ public class BattleRoomManager {
         if (!isRemoved) return;
 
         if (!room.sessions.isEmpty()) {
+            BattleResultResponse forfeitResult = battleService.forfeit(roomId);
+            if (forfeitResult != null) {
+                broadcast(roomId, WebSocketResponse.of(
+                        WebSocketMessageType.BATTLE_FINISHED,
+                        forfeitResult
+                ));
+            }
             broadcast(roomId, WebSocketResponse.of(
                     WebSocketMessageType.ROOM_CLOSED,
                     "상대방이 퇴장했습니다."

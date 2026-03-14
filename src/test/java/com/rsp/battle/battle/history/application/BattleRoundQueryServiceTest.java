@@ -85,6 +85,7 @@ class BattleRoundQueryServiceTest {
         BattleRoundHistoryResponse history = result.content().get(0);
         assertEquals(Move.ROCK, history.myMove());
         assertEquals(Move.SCISSORS, history.opponentMove());
+        assertEquals(BattleResult.WIN, history.battleResult());
     }
 
     @Test
@@ -101,6 +102,52 @@ class BattleRoundQueryServiceTest {
         BattleRoundHistoryResponse history = result.content().get(0);
         assertEquals(Move.PAPER, history.myMove());
         assertEquals(Move.ROCK, history.opponentMove());
+        assertEquals(BattleResult.WIN, history.battleResult());
+    }
+
+    @Test
+    void getBattleHistoryReturnsLoseWhenOpponentWins() {
+        BattleRoundHistoryProjection projection = mockProjection(
+                100L, 1L, 2L, Move.ROCK, Move.PAPER, 2L
+        );
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<BattleRoundHistoryProjection> page = new PageImpl<>(List.of(projection), pageable, 1);
+        when(battleRoundRepository.searchBattleResult(1L, "", null, pageable)).thenReturn(page);
+
+        Paginated<BattleRoundHistoryResponse> result = battleRoundQueryService.getBattleHistory(1L, "", null, pageable);
+
+        assertEquals(BattleResult.LOSE, result.content().get(0).battleResult());
+    }
+
+    @Test
+    void getBattleHistoryReturnsDrawWhenWinnerIsNull() {
+        BattleRoundHistoryProjection projection = mockProjection(
+                100L, 1L, 2L, Move.ROCK, Move.ROCK, null
+        );
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<BattleRoundHistoryProjection> page = new PageImpl<>(List.of(projection), pageable, 1);
+        when(battleRoundRepository.searchBattleResult(1L, "", null, pageable)).thenReturn(page);
+
+        Paginated<BattleRoundHistoryResponse> result = battleRoundQueryService.getBattleHistory(1L, "", null, pageable);
+
+        assertEquals(BattleResult.DRAW, result.content().get(0).battleResult());
+    }
+
+    @Test
+    void getBattleHistoryReturnsWinWhenOpponentTimedOut() {
+        BattleRoundHistoryProjection projection = mockProjection(
+                100L, 1L, 2L, Move.ROCK, null, 1L
+        );
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<BattleRoundHistoryProjection> page = new PageImpl<>(List.of(projection), pageable, 1);
+        when(battleRoundRepository.searchBattleResult(1L, "", null, pageable)).thenReturn(page);
+
+        Paginated<BattleRoundHistoryResponse> result = battleRoundQueryService.getBattleHistory(1L, "", null, pageable);
+
+        BattleRoundHistoryResponse history = result.content().get(0);
+        assertEquals(BattleResult.WIN, history.battleResult());
+        assertEquals(Move.ROCK, history.myMove());
+        assertNull(history.opponentMove());
     }
 
     @Test

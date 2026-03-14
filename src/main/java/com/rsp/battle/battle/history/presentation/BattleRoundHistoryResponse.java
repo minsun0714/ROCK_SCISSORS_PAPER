@@ -10,6 +10,7 @@ public record BattleRoundHistoryResponse(
         String profileImageUrl,
         Move myMove,
         Move opponentMove,
+        BattleResult battleResult,
         Instant playedAt
 ) {
 }
