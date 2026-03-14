@@ -2,6 +2,7 @@ package com.rsp.battle.user.presentation;
 
 import com.rsp.battle.auth.domain.CustomUserPrincipal;
 import com.rsp.battle.user.application.UserService;
+import com.rsp.battle.user.presentation.dto.request.NicknameUpdateRequest;
 import com.rsp.battle.user.presentation.dto.request.ProfilePictureUpdateRequest;
 import com.rsp.battle.user.presentation.dto.request.ProfilePresignedUrlRequest;
 import com.rsp.battle.user.presentation.dto.request.StatusMessageUpdateRequest;
@@ -52,6 +53,15 @@ public class MyInfoController {
         );
 
         return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/nickname")
+    public ResponseEntity<Void> updateNickname(
+            @AuthenticationPrincipal CustomUserPrincipal user,
+            @Valid @RequestBody NicknameUpdateRequest nicknameUpdateRequest
+    ) {
+        userService.updateNickname(user.getUserId(), nicknameUpdateRequest.nickname());
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/profile-picture")
