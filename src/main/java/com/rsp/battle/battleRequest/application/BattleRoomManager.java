@@ -47,6 +47,7 @@ public class BattleRoomManager {
         // 새로고침 등으로 인한 재접속 고려
         room.sessions.removeIf(oldSession ->
                 oldSession.getAttributes().get("userId").equals(userId)
+                    && !oldSession.isOpen()
         );
 
         if (room.sessions.size() >= ROOM_MAX_SIZE
