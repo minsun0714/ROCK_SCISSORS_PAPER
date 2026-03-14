@@ -3,6 +3,8 @@ package com.rsp.battle.battleRequest.presentation;
 import com.rsp.battle.auth.domain.CustomUserPrincipal;
 import com.rsp.battle.battleRequest.application.BattleRequestService;
 import com.rsp.battle.battleRequest.presentation.dto.request.BattleRequest;
+import com.rsp.battle.battleRequest.presentation.dto.response.BattleRequestAcceptResponse;
+import com.rsp.battle.battleRequest.presentation.dto.response.BattleRequestRejectResponse;
 import com.rsp.battle.battleRequest.presentation.dto.response.BattleRequestResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

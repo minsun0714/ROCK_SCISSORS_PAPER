@@ -1,6 +1,7 @@
-package com.rsp.battle.battleRequest.presentation;
+package com.rsp.battle.battleRequest.presentation.dto.response;
 
 import com.rsp.battle.battleRequest.domain.BattleRoom;
+import com.rsp.battle.battleRequest.presentation.BattleStatus;
 
 import java.time.Instant;
 
