@@ -94,10 +94,29 @@ class BattleRoomManagerTest {
         WebSocketSession session1Reconnect = mockSession(1L, 10L);
 
         manager.join(session1);
+
+        // 새로고침: 기존 세션이 닫힌 상태에서 재접속
+        when(session1.isOpen()).thenReturn(false);
         manager.join(session1Reconnect);
 
         // 재접속이므로 여전히 1명 — 배틀 시작 안 됨
         verify(battleService, never()).startBattleRound(any());
+    }
+
+    @Test
+    void joinDuplicateSessionIsRejected() throws Exception {
+        WebSocketSession session1 = mockSession(1L, 10L);
+        WebSocketSession session1Duplicate = mockSession(1L, 10L);
+
+        manager.join(session1);
+
+        // 기존 세션이 열려있는 상태에서 다른 탭 접속 시도
+        manager.join(session1Duplicate);
+
+        // 중복 접속 거부 — 새 세션 닫힘
+        verify(session1Duplicate).close();
+        // 기존 세션은 유지
+        verify(session1, never()).close();
     }
 
     // ── leave ──
