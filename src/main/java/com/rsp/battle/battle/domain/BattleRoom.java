@@ -98,7 +98,7 @@ public class BattleRoom {
 
     public void close() {
         if (status == BattleRoomStatus.CLOSED) {
-            throw new BusinessException(ErrorCode.BATTLE_ROOM_CLOSED);
+            return;
         }
         status = BattleRoomStatus.CLOSED;
     }
