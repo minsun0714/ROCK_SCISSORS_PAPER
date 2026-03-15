@@ -88,11 +88,11 @@ public class BattleRoomManager {
     }
 
     public void startBattle(Long roomId) {
+        battleService.startBattleRound(roomId);
         broadcast(roomId, WebSocketResponse.of(
                 WebSocketMessageType.BATTLE_START,
                 "새로운 배틀 시작"
         ));
-        battleService.startBattleRound(roomId);
 
         rooms.get(roomId).timer = setTimer(roomId, () -> {
             BattleResultResponse response = battleService.decideWinner(roomId);
