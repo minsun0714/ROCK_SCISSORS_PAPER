@@ -60,7 +60,7 @@ public class BattleRoomManager {
         }
 
         if (room.sessions.size() >= ROOM_MAX_SIZE
-                || !room.sessions.isEmpty() && Objects.requireNonNull(room.timer).isDone()) {
+                || !room.sessions.isEmpty() && room.timer != null && room.timer.isDone()) {
             closeSession(currentSession);
             return;
         }
