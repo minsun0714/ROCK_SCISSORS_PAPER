@@ -86,6 +86,8 @@ services:
       - .env.prod
     environment:
       DATA_SOURCE_NAME: "${MYSQL_EXPORTER_USER}:${MYSQL_EXPORTER_PASSWORD}@(${MYSQL_HOST}:3306)/"
+    volumes:
+      - ./mysql-exporter.cnf:/etc/mysql-exporter.cnf:ro
     command:
       - "--collect.global_status"
       - "--collect.info_schema.innodb_metrics"
