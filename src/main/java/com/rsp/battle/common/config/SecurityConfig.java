@@ -47,7 +47,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()
-                        .requestMatchers("/actuator/**").permitAll()
+                        .requestMatchers("/actuator/**", "/auth/loadtest/**").permitAll()
                         .requestMatchers("/users/me", "/friends/me", "/battles/*/me").authenticated()
                         .requestMatchers("/login/**", "/auth/refresh", "/auth/logout", "/auth/exchange", "/csrf", "/users/*", "/friends/*", "/battles/**", "/ws").permitAll()
                         .anyRequest().authenticated()
