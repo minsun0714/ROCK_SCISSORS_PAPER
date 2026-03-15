@@ -4,8 +4,8 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: rsp-app
-    expose:
-      - "8080"
+    ports:
+      - "8080:8080"
     env_file:
       - .env.prod
     depends_on:
