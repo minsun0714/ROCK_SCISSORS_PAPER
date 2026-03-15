@@ -62,16 +62,12 @@ class BattleRoomTest {
     }
 
     @Test
-    void closeThrowsWhenAlreadyClosed() {
+    void closeWhenAlreadyClosedDoesNothing() {
         BattleRoom room = BattleRoom.create(1L, 2L);
         room.close();
+        room.close();
 
-        BusinessException exception = assertThrows(
-                BusinessException.class,
-                room::close
-        );
-
-        assertEquals(ErrorCode.BATTLE_ROOM_CLOSED, exception.getErrorCode());
+        assertEquals(BattleRoomStatus.CLOSED, room.getStatus());
     }
 
     @Test
