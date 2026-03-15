@@ -162,25 +162,26 @@ public class BattleRoomManager {
         boolean isRemoved = room.sessions.remove(session);
         if (!isRemoved) return;
 
-        if (!room.sessions.isEmpty()) {
-            BattleResultResponse forfeitResult = battleService.forfeit(roomId);
-            if (forfeitResult != null) {
-                broadcast(roomId, WebSocketResponse.of(
-                        WebSocketMessageType.BATTLE_FINISHED,
-                        forfeitResult
-                ));
-            }
-            broadcast(roomId, WebSocketResponse.of(
-                    WebSocketMessageType.ROOM_CLOSED,
-                    "상대방이 퇴장했습니다."
-            ));
-            for (WebSocketSession s : room.sessions) {
-                closeSession(s);
-            }
+        if (room.sessions.isEmpty()) {
             battleService.close(roomId);
+            rooms.remove(roomId);
+            return;
         }
 
-        rooms.remove(roomId);
+        BattleResultResponse forfeitResult = battleService.forfeit(roomId);
+        if (forfeitResult != null) {
+            broadcast(roomId, WebSocketResponse.of(
+                    WebSocketMessageType.BATTLE_FINISHED,
+                    forfeitResult
+            ));
+        }
+        broadcast(roomId, WebSocketResponse.of(
+                WebSocketMessageType.ROOM_CLOSED,
+                "상대방이 퇴장했습니다."
+        ));
+        for (WebSocketSession s : room.sessions) {
+            closeSession(s);
+        }
     }
 
     private ScheduledFuture<?> setTimer(Long roomId, Runnable task, Integer second) {
