@@ -49,8 +49,8 @@ services:
   node-exporter:
     image: prom/node-exporter
     container_name: rsp-node-exporter
-    expose:
-      - "9100"
+    ports:
+      - "9100:9100"
     restart: always
 
   redis-exporter:
@@ -59,8 +59,8 @@ services:
     environment:
       - REDIS_ADDR=redis:6379
       - REDIS_PASSWORD=${SPRING_REDIS_PASSWORD}
-    expose:
-      - "9121"
+    ports:
+      - "9121:9121"
     depends_on:
       - redis
     restart: always
@@ -70,8 +70,8 @@ services:
     container_name: rsp-nginx-exporter
     command:
       - -nginx.scrape-uri=http://nginx:80/stub_status
-    expose:
-      - "9113"
+    ports:
+      - "9113:9113"
     depends_on:
       - nginx
     restart: always
