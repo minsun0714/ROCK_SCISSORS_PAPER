@@ -45,6 +45,8 @@ management:
   endpoint:
     health:
       show-details: when_authorized
+    prometheus:
+      enabled: true
   metrics:
     tags:
       application: rsp-battle
