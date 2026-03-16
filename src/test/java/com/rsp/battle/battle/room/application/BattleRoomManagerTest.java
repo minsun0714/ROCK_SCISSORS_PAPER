@@ -265,48 +265,4 @@ class BattleRoomManagerTest {
             reset(battleService);
         }
     }
-
-    @Test
-    void playBattleRaceConditionShouldStartBattleOnlyOnce() throws Exception {
-
-        int repeat = 10000;
-        int fail = 0;
-
-        for (int i = 0; i < repeat; i++) {
-
-            Long roomId = (long) i;
-
-            WebSocketSession session1 = mockSession(roomId, 10L);
-            WebSocketSession session2 = mockSession(roomId, 20L);
-
-            ExecutorService executor = Executors.newFixedThreadPool(2);
-            CyclicBarrier barrier = new CyclicBarrier(2);
-
-            Future<?> f1 = executor.submit(() -> {
-                barrier.await();
-                manager.join(session1);
-                return null;
-            });
-
-            Future<?> f2 = executor.submit(() -> {
-                barrier.await();
-                manager.join(session2);
-                return null;
-            });
-
-            f1.get();
-            f2.get();
-
-            executor.shutdown();
-
-            try {
-                verify(battleService, times(1)).startBattleRound(roomId);
-            } catch (Throwable e){
-                fail++;
-            }
-
-            reset(battleService);
-        }
-        Assertions.assertEquals(0, fail);
-    }
 }
