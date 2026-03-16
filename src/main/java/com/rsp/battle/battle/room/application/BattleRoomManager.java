@@ -13,7 +13,6 @@ import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.*;
@@ -195,7 +194,8 @@ public class BattleRoomManager {
     }
 
     private void closeTimer(Long roomId) {
-        Objects.requireNonNull(rooms.get(roomId).timer).cancel(true);
+        ScheduledFuture<?> timer = rooms.get(roomId).timer;
+        if (timer != null) timer.cancel(true);
     }
 
     private void broadcast(Long roomId, Object data) {
