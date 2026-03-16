@@ -13,7 +13,6 @@ import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.*;
@@ -65,25 +64,27 @@ public class BattleRoomManager {
             return;
         }
 
-        room.sessions.add(currentSession);
+        synchronized (room) {
+            room.sessions.add(currentSession);
 
-        if (room.sessions.size() < ROOM_MAX_SIZE) {
-            room.timer = setTimer(roomId, () -> {
-                broadcast(roomId, WebSocketResponse.of(
-                        WebSocketMessageType.ROOM_CLOSED,
-                        "상대방이 5분 동안 입장하지 않아 배틀이 종료됩니다."
-                ));
-                for (WebSocketSession s : room.sessions) {
-                    closeSession(s);
-                }
-                rooms.remove(roomId);
-            }, WAIT_SECONDS_UNTIL_OPPONENT_ENTER_ROOM);
-        }
+            if (room.sessions.size() < ROOM_MAX_SIZE) {
+                room.timer = setTimer(roomId, () -> {
+                    broadcast(roomId, WebSocketResponse.of(
+                            WebSocketMessageType.ROOM_CLOSED,
+                            "상대방이 5분 동안 입장하지 않아 배틀이 종료됩니다."
+                    ));
+                    for (WebSocketSession s : room.sessions) {
+                        closeSession(s);
+                    }
+                    rooms.remove(roomId);
+                }, WAIT_SECONDS_UNTIL_OPPONENT_ENTER_ROOM);
+            }
 
-        if (room.sessions.size() == ROOM_MAX_SIZE) {
-            closeTimer(roomId);
+            if (room.sessions.size() == ROOM_MAX_SIZE) {
+                closeTimer(roomId);
 
-            startBattle(roomId);
+                startBattle(roomId);
+            }
         }
     }
 
@@ -125,10 +126,9 @@ public class BattleRoomManager {
         }
 
         boolean bothMoved = battleService.move(
-                roomId,
-                userId,
-                Move.valueOf(move)
-        );
+                    roomId,
+                    userId,
+                    Move.valueOf(move));
 
         Room room = rooms.get(roomId);
 
@@ -195,7 +195,8 @@ public class BattleRoomManager {
     }
 
     private void closeTimer(Long roomId) {
-        Objects.requireNonNull(rooms.get(roomId).timer).cancel(true);
+        ScheduledFuture<?> timer = rooms.get(roomId).timer;
+        if (timer != null) timer.cancel(true);
     }
 
     private void broadcast(Long roomId, Object data) {

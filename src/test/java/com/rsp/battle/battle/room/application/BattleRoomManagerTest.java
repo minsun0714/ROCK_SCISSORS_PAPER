@@ -5,16 +5,22 @@ import com.rsp.battle.battle.domain.Move;
 import com.rsp.battle.battle.request.presentation.dto.response.BattleResultResponse;
 import com.rsp.battle.battle.room.application.BattleRoomManager;
 import com.rsp.battle.battle.room.application.BattleService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.exceptions.verification.WantedButNotInvoked;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
@@ -220,5 +226,87 @@ class BattleRoomManagerTest {
         verify(battleService).startBattleRound(1L);
         verify(session1, atLeastOnce()).sendMessage(any(TextMessage.class));
         verify(session2, atLeastOnce()).sendMessage(any(TextMessage.class));
+    }
+
+    @Test
+    void joinRaceConditionShouldStartBattleOnlyOnce() throws Exception {
+
+        int repeat = 10000;
+
+        for (int i = 0; i < repeat; i++) {
+
+            Long roomId = (long) i;
+
+            WebSocketSession session1 = mockSession(roomId, 10L);
+            WebSocketSession session2 = mockSession(roomId, 20L);
+
+            ExecutorService executor = Executors.newFixedThreadPool(2);
+            CyclicBarrier barrier = new CyclicBarrier(2);
+
+            Future<?> f1 = executor.submit(() -> {
+                barrier.await();
+                manager.join(session1);
+                return null;
+            });
+
+            Future<?> f2 = executor.submit(() -> {
+                barrier.await();
+                manager.join(session2);
+                return null;
+            });
+
+            f1.get();
+            f2.get();
+
+            executor.shutdown();
+
+            verify(battleService, atMostOnce()).startBattleRound(roomId);
+
+            reset(battleService);
+        }
+    }
+
+    @Test
+    void playBattleRaceConditionShouldStartBattleOnlyOnce() throws Exception {
+
+        int repeat = 10000;
+        int fail = 0;
+
+        for (int i = 0; i < repeat; i++) {
+
+            Long roomId = (long) i;
+
+            WebSocketSession session1 = mockSession(roomId, 10L);
+            WebSocketSession session2 = mockSession(roomId, 20L);
+
+            ExecutorService executor = Executors.newFixedThreadPool(2);
+            CyclicBarrier barrier = new CyclicBarrier(2);
+
+            Future<?> f1 = executor.submit(() -> {
+                barrier.await();
+                manager.join(session1);
+                return null;
+            });
+
+            Future<?> f2 = executor.submit(() -> {
+                barrier.await();
+                manager.join(session2);
+                return null;
+            });
+
+            f1.get();
+            f2.get();
+
+            executor.shutdown();
+
+            try {
+                verify(battleService, times(1)).startBattleRound(roomId);
+            } catch (Throwable e){
+                fail++;
+            }
+
+            reset(battleService);
+        }
+        Assertions.assertEquals(0, fail);
     }
 }
